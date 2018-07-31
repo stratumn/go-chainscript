@@ -23,22 +23,85 @@ import (
 )
 
 func TestLinkBuilder(t *testing.T) {
-	t.Run("missing process", func(t *testing.T) {
-		l, err := chainscript.NewLinkBuilder("", "mapID_123").Build()
-		assert.EqualError(t, err, chainscript.ErrMissingProcess.Error())
-		assert.Nil(t, l)
-	})
+	process := "test_process"
+	mapID := "test_map_1"
 
-	t.Run("missing map ID", func(t *testing.T) {
-		l, err := chainscript.NewLinkBuilder("process1", "").Build()
-		assert.EqualError(t, err, chainscript.ErrMissingMapID.Error())
-		assert.Nil(t, l)
-	})
+	testCases := []struct {
+		name     string
+		builder  *chainscript.LinkBuilder
+		validate func(*testing.T, *chainscript.Link)
+		err      error
+	}{{
+		"missing process",
+		chainscript.NewLinkBuilder("", mapID),
+		nil,
+		chainscript.ErrMissingProcess,
+	}, {
+		"missing map id",
+		chainscript.NewLinkBuilder(process, ""),
+		nil,
+		chainscript.ErrMissingMapID,
+	}, {
+		"version",
+		chainscript.NewLinkBuilder(process, mapID),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, chainscript.LinkVersion, l.Version)
+		},
+		nil,
+	}, {
+		"action",
+		chainscript.NewLinkBuilder(process, mapID).WithAction("receive-document"),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, "receive-document", l.Meta.Action)
+		},
+		nil,
+	}, {
+		"priority",
+		chainscript.NewLinkBuilder(process, mapID).WithPriority(0.42),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, 0.42, l.Meta.Priority)
+		},
+		nil,
+	}, {
+		"negative priority",
+		chainscript.NewLinkBuilder(process, mapID).WithPriority(-0.42),
+		nil,
+		chainscript.ErrInvalidPriority,
+	}, {
+		"process state",
+		chainscript.NewLinkBuilder(process, mapID).WithProcessState("all-documents-gathered"),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, "all-documents-gathered", l.Meta.Process.State)
+		},
+		nil,
+	}, {
+		"step",
+		chainscript.NewLinkBuilder(process, mapID).WithStep("document-handoff"),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, "document-handoff", l.Meta.Step)
+		},
+		nil,
+	}, {
+		"tags",
+		chainscript.NewLinkBuilder(process, mapID).WithTags("tag1", "tag2").WithTags("tag3"),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Len(t, l.Meta.Tags, 3)
+			assert.ElementsMatch(t, []string{"tag1", "tag2", "tag3"}, l.Meta.Tags)
+		},
+		nil,
+	}}
 
-	t.Run("version", func(t *testing.T) {
-		l, err := chainscript.NewLinkBuilder("p1", "map1").Build()
-		require.NoError(t, err)
-		require.NotNil(t, l)
-		assert.Equal(t, chainscript.LinkVersion, l.Version)
-	})
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			l, err := tt.builder.Build()
+			if tt.err != nil {
+				assert.EqualError(t, err, tt.err.Error())
+				assert.Nil(t, l)
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, l)
+				tt.validate(t, l)
+			}
+		})
+	}
 }

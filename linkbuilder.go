@@ -23,8 +23,9 @@ const (
 
 // Link errors.
 var (
-	ErrMissingProcess = errors.New("link process is missing")
-	ErrMissingMapID   = errors.New("link map id is missing")
+	ErrMissingProcess  = errors.New("link process is missing")
+	ErrMissingMapID    = errors.New("link map id is missing")
+	ErrInvalidPriority = errors.New("priority needs to be positive")
 )
 
 // LinkBuilder makes it easy to create links that adhere to the ChainScript
@@ -60,6 +61,44 @@ func NewLinkBuilder(process string, mapID string) *LinkBuilder {
 		},
 		err: err,
 	}
+}
+
+// WithAction sets the link's action.
+// The action is what caused the link to be created.
+func (b *LinkBuilder) WithAction(action string) *LinkBuilder {
+	b.link.Meta.Action = action
+	return b
+}
+
+// WithPriority sets the link's priority.
+func (b *LinkBuilder) WithPriority(priority float64) *LinkBuilder {
+	if priority <= 0 {
+		b.err = ErrInvalidPriority
+		return b
+	}
+
+	b.link.Meta.Priority = priority
+	return b
+}
+
+// WithProcessState sets the state of the process.
+// If your process can be represented as a state machine and the current link
+// changes the state machine, it allows easy tracking of the process evolution.
+func (b *LinkBuilder) WithProcessState(state string) *LinkBuilder {
+	b.link.Meta.Process.State = state
+	return b
+}
+
+// WithStep sets the specific process step represented by the link.
+func (b *LinkBuilder) WithStep(step string) *LinkBuilder {
+	b.link.Meta.Step = step
+	return b
+}
+
+// WithTags adds some tags to the link.
+func (b *LinkBuilder) WithTags(tags ...string) *LinkBuilder {
+	b.link.Meta.Tags = append(b.link.Meta.Tags, tags...)
+	return b
 }
 
 // Build returns the corresponding link or an error.
