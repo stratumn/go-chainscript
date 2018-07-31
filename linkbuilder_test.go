@@ -49,6 +49,13 @@ func TestLinkBuilder(t *testing.T) {
 		},
 		nil,
 	}, {
+		"client ID",
+		chainscript.NewLinkBuilder(process, mapID),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, chainscript.ClientID, l.Meta.ClientId)
+		},
+		nil,
+	}, {
 		"action",
 		chainscript.NewLinkBuilder(process, mapID).WithAction("receive-document"),
 		func(t *testing.T, l *chainscript.Link) {
