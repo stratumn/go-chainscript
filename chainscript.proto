@@ -21,7 +21,7 @@ syntax = "proto3";
 // process.
 package stratumn.chainscript;
 
-option go_package = "github.com/stratumn/go-chainscript;chainscript";
+option go_package = "chainscript";
 
 // A segment describes an atomic step in your process.
 message Segment {
@@ -71,17 +71,21 @@ message Evidence {
 // A link is the immutable part of a segment.
 // A link contains all the data that represents a process' step.
 message Link {
+    // Version of the link format.
+    // You can for example use the git tag of the code used to create the link.
+    string version = 1;
+
     // Data representing the process' step details.
     // For backwards compatibility, you should update the link version
     // in meta when the structure/encoding of this field changes.
-    bytes data = 1;
+    bytes data = 10;
     // Metadata associated to the process' step.
     // Some of this metadata is used to provide filtering options when
     // fetching links.
-    LinkMeta meta = 2;
+    LinkMeta meta = 11;
 
     // (Optional) Signatures of configurable parts of the link.
-    repeated Signature signatures = 10;
+    repeated Signature signatures = 20;
 }
 
 // A process represents a real-world process that is shared between multiple
@@ -97,13 +101,10 @@ message Process {
 // Metadata associated to a process' step.
 // Once included in a segment, this is immutable.
 message LinkMeta {
-    // Version of the link format.
-    // You can for example use the git tag of the code used to create the link.
-    string version = 1;
     // The Client ID should be set by the client code creating the link.
     // Use a unique ID that easily identifies your library, for example the
     // github url of your repository.
-    string client_id = 2;
+    string client_id = 1;
 
     // Hash of the previous link (in the same process).
     bytes prev_link_hash = 10;

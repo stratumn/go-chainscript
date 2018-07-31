@@ -16,12 +16,27 @@ Learn more [here](https://proofofprocess.org/).
 ChainScript is defined with [protobuf](https://developers.google.com/protocol-buffers/)
 to provide a portable encoding.
 
-It is recommended to import this repository as a `git subtree`.
+It is recommended to import this repository as a `git subtree`:
+
+```bash
+git subtree add --prefix proto git@github.com:stratumn/chainscript.git master --squash
+```
+
 Your application can then compile the protobuf file to types in your language
 of choice and add any helpers you need.
 
 Changes to ChainScript should be done in the current repository: clients should
 pull the latest changes with `git subtree`.
+
+## Reference Implementations
+
+Stratumn provides opinionated reference implementations that should suit most
+projects:
+
+| Language   | Repository                                 | Status      |
+| ---------- | ------------------------------------------ | ----------- |
+| Golang     | https://github.com/stratumn/go-chainscript | Development |
+| Javascript | https://github.com/stratumn/js-chainscript | Development |
 
 ## Design Choices
 
