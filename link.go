@@ -19,18 +19,39 @@ import (
 	"encoding/hex"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 )
 
-// Hash serializes the link using protobuf and computes a SHA256 hash of the
-// resulting bytes.
-func (l *Link) Hash() ([]byte, error) {
-	b, err := proto.Marshal(l)
-	if err != nil {
-		return nil, err
-	}
+const (
+	// LinkVersion1_0_0 is the first version of the link encoding.
+	// In that version we encode interfaces (link.data and link.meta.data) with
+	// canonical JSON and hash the protobuf-encoded link bytes with SHA-256.
+	LinkVersion1_0_0 = "1.0.0"
 
-	lh := sha256.Sum256(b)
-	return lh[:], nil
+	// LinkVersion is the version used for new links.
+	LinkVersion = LinkVersion1_0_0
+)
+
+// Link errors.
+var (
+	ErrUnknownLinkVersion = errors.New("unknown link version")
+)
+
+// Hash serializes the link and computes a hash of the resulting bytes.
+// The serialization and hashing algorithm used depend on the link version.
+func (l *Link) Hash() ([]byte, error) {
+	switch l.Version {
+	case LinkVersion1_0_0:
+		b, err := proto.Marshal(l)
+		if err != nil {
+			return nil, err
+		}
+
+		lh := sha256.Sum256(b)
+		return lh[:], nil
+	default:
+		return nil, ErrUnknownLinkVersion
+	}
 }
 
 // HashString returns the hex-encoded link hash.

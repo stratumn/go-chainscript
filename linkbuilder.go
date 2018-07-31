@@ -20,21 +20,12 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	// LinkVersion is the current version of the link encoding.
-	LinkVersion = "1.0.0"
-
-	// LinkHashSize is the size of a link hash. In the current version we use
-	// SHA-256 so this should be 32.
-	LinkHashSize = 32
-)
-
 // Link errors.
 var (
 	ErrMissingProcess  = errors.New("link process is missing")
 	ErrMissingMapID    = errors.New("link map id is missing")
+	ErrMissingLinkHash = errors.New("link hash is missing")
 	ErrInvalidPriority = errors.New("priority needs to be positive")
-	ErrInvalidLinkHash = errors.New("invalid link hash")
 )
 
 // LinkBuilder makes it easy to create links that adhere to the ChainScript
@@ -84,8 +75,8 @@ func (b *LinkBuilder) WithAction(action string) *LinkBuilder {
 
 // WithParent sets the link's parent, referenced by its hash.
 func (b *LinkBuilder) WithParent(linkHash []byte) *LinkBuilder {
-	if len(linkHash) != LinkHashSize {
-		b.err = ErrInvalidLinkHash
+	if len(linkHash) == 0 {
+		b.err = ErrMissingLinkHash
 		return b
 	}
 
@@ -124,8 +115,8 @@ func (b *LinkBuilder) WithRefs(refs ...*LinkReference) *LinkBuilder {
 			return b
 		}
 
-		if len(ref.PrevLinkHash) != LinkHashSize {
-			b.err = ErrInvalidLinkHash
+		if len(ref.PrevLinkHash) == 0 {
+			b.err = ErrMissingLinkHash
 			return b
 		}
 

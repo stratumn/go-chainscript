@@ -110,10 +110,10 @@ func TestLinkBuilder(t *testing.T) {
 		},
 		nil,
 	}, {
-		"invalid parent",
-		chainscript.NewLinkBuilder(process, mapID).WithParent([]byte{42, 24, 63}),
+		"parent missing",
+		chainscript.NewLinkBuilder(process, mapID).WithParent(nil),
 		nil,
-		chainscript.ErrInvalidLinkHash,
+		chainscript.ErrMissingLinkHash,
 	}, {
 		"refs",
 		chainscript.NewLinkBuilder(process, mapID).WithRefs(

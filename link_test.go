@@ -23,21 +23,32 @@ import (
 )
 
 func TestLink_Hash(t *testing.T) {
-	l1, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
-	l2, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
-	l3, _ := chainscript.NewLinkBuilder("p2", "m42").Build()
+	t.Run("unknown version", func(t *testing.T) {
+		l, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
+		l.Version = "0.42.0"
 
-	h1, err := l1.Hash()
-	require.NoError(t, err)
-	assert.Len(t, h1, 32)
+		lh, err := l.Hash()
+		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+		assert.Nil(t, lh)
+	})
 
-	h2, err := l2.Hash()
-	require.NoError(t, err)
-	assert.Equal(t, h1, h2)
+	t.Run("version 1.0.0", func(t *testing.T) {
+		l1, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
+		l2, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
+		l3, _ := chainscript.NewLinkBuilder("p2", "m42").Build()
 
-	h3, err := l3.Hash()
-	require.NoError(t, err)
-	assert.NotEqual(t, h1, h3)
+		h1, err := l1.Hash()
+		require.NoError(t, err)
+		assert.Len(t, h1, 32)
+
+		h2, err := l2.Hash()
+		require.NoError(t, err)
+		assert.Equal(t, h1, h2)
+
+		h3, err := l3.Hash()
+		require.NoError(t, err)
+		assert.NotEqual(t, h1, h3)
+	})
 }
 
 func TestLink_HashString(t *testing.T) {
