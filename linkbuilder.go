@@ -14,7 +14,11 @@
 
 package chainscript
 
-import "github.com/pkg/errors"
+import (
+	"encoding/hex"
+
+	"github.com/pkg/errors"
+)
 
 const (
 	// LinkVersion is the current version of the link encoding.
@@ -37,8 +41,11 @@ var (
 // spec.
 // It provides valid default values for required fields and allows the user
 // to set fields to valid values.
+// Note that link builders are not thread safe. They are meant to build an
+// object instance which is generally done in a single go routine.
 type LinkBuilder struct {
 	link *Link
+	refs map[string]struct{}
 	err  error
 }
 
@@ -102,6 +109,35 @@ func (b *LinkBuilder) WithPriority(priority float64) *LinkBuilder {
 // changes the state machine, it allows easy tracking of the process evolution.
 func (b *LinkBuilder) WithProcessState(state string) *LinkBuilder {
 	b.link.Meta.Process.State = state
+	return b
+}
+
+// WithRefs references links that are related to the current link.
+func (b *LinkBuilder) WithRefs(refs ...*LinkReference) *LinkBuilder {
+	if b.refs == nil {
+		b.refs = make(map[string]struct{})
+	}
+
+	for _, ref := range refs {
+		if len(ref.Process) == 0 {
+			b.err = ErrMissingProcess
+			return b
+		}
+
+		if len(ref.PrevLinkHash) != LinkHashSize {
+			b.err = ErrInvalidLinkHash
+			return b
+		}
+
+		hexLinkHash := hex.EncodeToString(ref.PrevLinkHash)
+		if _, ok := b.refs[hexLinkHash]; ok {
+			continue
+		}
+
+		b.link.Meta.Refs = append(b.link.Meta.Refs, ref)
+		b.refs[hexLinkHash] = struct{}{}
+	}
+
 	return b
 }
 

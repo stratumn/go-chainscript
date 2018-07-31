@@ -114,6 +114,29 @@ func TestLinkBuilder(t *testing.T) {
 		chainscript.NewLinkBuilder(process, mapID).WithParent([]byte{42, 24, 63}),
 		nil,
 		chainscript.ErrInvalidLinkHash,
+	}, {
+		"refs",
+		chainscript.NewLinkBuilder(process, mapID).WithRefs(
+			&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
+			&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
+			&chainscript.LinkReference{Process: process, PrevLinkHash: make([]byte, 32)},
+		),
+		func(t *testing.T, l *chainscript.Link) {
+			expected := []*chainscript.LinkReference{
+				&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
+				&chainscript.LinkReference{Process: process, PrevLinkHash: make([]byte, 32)},
+			}
+			assert.ElementsMatch(t, expected, l.Meta.Refs)
+		},
+		nil,
+	}, {
+		"invalid refs",
+		chainscript.NewLinkBuilder(process, mapID).WithRefs(
+			&chainscript.LinkReference{Process: "", PrevLinkHash: testLinkHash},
+			&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
+		),
+		nil,
+		chainscript.ErrMissingProcess,
 	}}
 
 	for _, tt := range testCases {
