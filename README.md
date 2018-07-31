@@ -1,5 +1,10 @@
 # Go ChainScript
 
+[![GoDoc](https://godoc.org/github.com/stratumn/go-chainscript?status.svg)](https://godoc.org/github.com/stratumn/go-chainscript)
+[![build status](https://travis-ci.org/stratumn/go-chainscript.svg?branch=master)](https://travis-ci.org/stratumn/go-chainscript)
+[![codecov](https://codecov.io/gh/stratumn/go-chainscript/branch/master/graph/badge.svg)](https://codecov.io/gh/stratumn/go-chainscript)
+[![Go Report Card](https://goreportcard.com/badge/github.com/stratumn/go-chainscript)](https://goreportcard.com/report/github.com/stratumn/go-chainscript)
+
 Official Go implementation of [ChainScript](https://github.com/stratumn/chainscript).
 This is the recommended way to use ChainScript in your Go projects.
 
