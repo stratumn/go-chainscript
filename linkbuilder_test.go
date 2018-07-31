@@ -26,6 +26,12 @@ func TestLinkBuilder(t *testing.T) {
 	process := "test_process"
 	mapID := "test_map_1"
 
+	testLink, err := chainscript.NewLinkBuilder(process, mapID).Build()
+	require.NoError(t, err)
+
+	testLinkHash, err := testLink.Hash()
+	require.NoError(t, err)
+
 	testCases := []struct {
 		name     string
 		builder  *chainscript.LinkBuilder
@@ -96,6 +102,18 @@ func TestLinkBuilder(t *testing.T) {
 			assert.ElementsMatch(t, []string{"tag1", "tag2", "tag3"}, l.Meta.Tags)
 		},
 		nil,
+	}, {
+		"parent",
+		chainscript.NewLinkBuilder(process, mapID).WithParent(testLinkHash),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, testLinkHash, l.PrevLinkHash())
+		},
+		nil,
+	}, {
+		"invalid parent",
+		chainscript.NewLinkBuilder(process, mapID).WithParent([]byte{42, 24, 63}),
+		nil,
+		chainscript.ErrInvalidLinkHash,
 	}}
 
 	for _, tt := range testCases {
