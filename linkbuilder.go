@@ -113,7 +113,14 @@ func (b *LinkBuilder) WithStep(step string) *LinkBuilder {
 
 // WithTags adds some tags to the link.
 func (b *LinkBuilder) WithTags(tags ...string) *LinkBuilder {
-	b.link.Meta.Tags = append(b.link.Meta.Tags, tags...)
+	for _, tag := range tags {
+		if len(tag) == 0 {
+			continue
+		}
+
+		b.link.Meta.Tags = append(b.link.Meta.Tags, tag)
+	}
+
 	return b
 }
 

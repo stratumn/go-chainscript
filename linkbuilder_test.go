@@ -96,7 +96,7 @@ func TestLinkBuilder(t *testing.T) {
 		nil,
 	}, {
 		"tags",
-		chainscript.NewLinkBuilder(process, mapID).WithTags("tag1", "tag2").WithTags("tag3"),
+		chainscript.NewLinkBuilder(process, mapID).WithTags("tag1", "tag2").WithTags("", "tag3"),
 		func(t *testing.T, l *chainscript.Link) {
 			assert.Len(t, l.Meta.Tags, 3)
 			assert.ElementsMatch(t, []string{"tag1", "tag2", "tag3"}, l.Meta.Tags)
