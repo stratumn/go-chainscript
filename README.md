@@ -16,4 +16,8 @@ The ChainScript definitions are imported as a `git subtree`.
 Changes to the protobuf files should be done in the
 [ChainScript repository](https://github.com/stratumn/chainscript).
 
-To get the latest version in this project, run `TODO`.
+To get the latest ChainScript definitions in this project, run:
+
+```bash
+git subtree pull --prefix proto git@github.com:stratumn/chainscript.git master --squash
+```
