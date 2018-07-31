@@ -24,5 +24,5 @@ Changes to the protobuf files should be done in the
 To get the latest ChainScript definitions in this project, run:
 
 ```bash
-git subtree pull --prefix proto git@github.com:stratumn/chainscript.git master --squash
+make update_chainscript
 ```
