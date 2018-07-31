@@ -3,7 +3,7 @@ go:
   - "1.10"
   - master
 install:
-  - go get -u golang.org/x/lint/golint
+  - make deps
 script:
   - make build
   - make lint

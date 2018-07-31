@@ -2,11 +2,25 @@
 PROTOS=$(shell find proto -name '*.proto')
 PROTOS_GO=$(PROTOS:.proto=.pb.go)
 
+# Linter parameters
+GO_LINT_CMD=golangci-lint
+GO_LINT=$(GO_LINT_CMD) run --build-tags="lint" --deadline=4m --disable="ineffassign" --disable="gas" --tests=false --skip-files=".*\\.pb.go"
+
 # == .PHONY ===================================================================
-.PHONY: build lint test protobuf update_chainscript
+.PHONY: dep golangcilint deps build lint test protobuf update_chainscript
 
 # == all ======================================================================
 all: build
+
+# == deps =====================================================================
+dep:
+	go get -u github.com/golang/dep/cmd/dep
+
+golangcilint:
+	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+
+deps: dep golangcilint
+	dep ensure
 
 # == build ====================================================================
 build:
@@ -14,7 +28,7 @@ build:
 
 # == lint =====================================================================
 lint:
-	golint ./...
+	$(GO_LINT) ./...
 
 # == test =====================================================================
 test:
