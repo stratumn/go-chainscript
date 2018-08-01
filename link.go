@@ -73,3 +73,13 @@ func (l *Link) PrevLinkHash() []byte {
 
 	return l.Meta.PrevLinkHash
 }
+
+// GetTagMap returns the tags as a map of string to empty structs (a set).
+// It makes it easier to test inclusion.
+func (l *Link) GetTagMap() map[string]struct{} {
+	tags := make(map[string]struct{})
+	for _, v := range l.Meta.Tags {
+		tags[v] = struct{}{}
+	}
+	return tags
+}

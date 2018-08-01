@@ -63,3 +63,19 @@ func TestLink_PrevLinkHash(t *testing.T) {
 	l1, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
 	assert.Nil(t, l1.PrevLinkHash())
 }
+
+func TestLink_GetTagMap(t *testing.T) {
+	t.Run("empty tags", func(t *testing.T) {
+		l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+		tags := l.GetTagMap()
+		assert.Empty(t, tags)
+	})
+
+	t.Run("with tags", func(t *testing.T) {
+		l, _ := chainscript.NewLinkBuilder("p", "m").WithTags("t1", "t2").Build()
+		tags := l.GetTagMap()
+		assert.Contains(t, tags, "t1")
+		assert.Contains(t, tags, "t2")
+		assert.NotContains(t, tags, "t3")
+	})
+}
