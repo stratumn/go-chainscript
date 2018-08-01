@@ -27,13 +27,13 @@ var (
 	ErrLinkHashMismatch = errors.New("link hash from meta doesn't equal hashed link")
 )
 
-// GetLinkHash returns the link hash.
-func (s *Segment) GetLinkHash() []byte {
+// LinkHash returns the link hash.
+func (s *Segment) LinkHash() []byte {
 	return s.Meta.LinkHash
 }
 
-// GetLinkHashString returns the hex-encoded link hash.
-func (s *Segment) GetLinkHashString() string {
+// LinkHashString returns the hex-encoded link hash.
+func (s *Segment) LinkHashString() string {
 	return hex.EncodeToString(s.Meta.LinkHash)
 }
 
