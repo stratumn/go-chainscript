@@ -32,7 +32,7 @@ func TestLink_Data(t *testing.T) {
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 
 		var data string
-		err = l.GetTypedData(data)
+		err = l.StructurizeData(data)
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 	})
 
@@ -49,7 +49,7 @@ func TestLink_Data(t *testing.T) {
 		require.NotNil(t, l.Data)
 
 		var data2 map[string]interface{}
-		err = l.GetTypedData(&data2)
+		err = l.StructurizeData(&data2)
 		require.NoError(t, err)
 		assert.Len(t, data2, 2)
 		assert.Equal(t, "spongebob", data2["user"])
@@ -67,7 +67,7 @@ func TestLink_Metadata(t *testing.T) {
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 
 		var metadata string
-		err = l.GetTypedMetadata(metadata)
+		err = l.StructurizeMetadata(metadata)
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 	})
 
@@ -80,7 +80,7 @@ func TestLink_Metadata(t *testing.T) {
 		require.NotNil(t, l.Meta.Data)
 
 		var metadata string
-		err = l.GetTypedMetadata(&metadata)
+		err = l.StructurizeMetadata(&metadata)
 		require.NoError(t, err)
 		assert.Equal(t, "spongebob rocks", metadata)
 	})
@@ -125,16 +125,16 @@ func TestLink_PrevLinkHash(t *testing.T) {
 	assert.Nil(t, l.PrevLinkHash())
 }
 
-func TestLink_GetTagMap(t *testing.T) {
+func TestLink_TagMap(t *testing.T) {
 	t.Run("empty tags", func(t *testing.T) {
 		l := chainscripttest.NewLinkBuilder(t).Build()
-		tags := l.GetTagMap()
+		tags := l.TagMap()
 		assert.Empty(t, tags)
 	})
 
 	t.Run("with tags", func(t *testing.T) {
 		l := chainscripttest.NewLinkBuilder(t).WithTags("t1", "t2").Build()
-		tags := l.GetTagMap()
+		tags := l.TagMap()
 		assert.Contains(t, tags, "t1")
 		assert.Contains(t, tags, "t2")
 		assert.NotContains(t, tags, "t3")

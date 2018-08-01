@@ -60,9 +60,9 @@ func (l *Link) SetData(data interface{}) error {
 	return nil
 }
 
-// GetTypedData deserializes the link's data into the given object.
+// StructurizeData deserializes the link's data into the given object.
 // The provided argument should be a pointer to a struct.
-func (l *Link) GetTypedData(data interface{}) error {
+func (l *Link) StructurizeData(data interface{}) error {
 	switch l.Version {
 	case LinkVersion1_0_0:
 		return json.Unmarshal(l.Data, data)
@@ -88,9 +88,9 @@ func (l *Link) SetMetadata(metadata interface{}) error {
 	return nil
 }
 
-// GetTypedMetadata deserializes the link's metadata into the given object.
+// StructurizeMetadata deserializes the link's metadata into the given object.
 // The provided argument should be a pointer to a struct.
-func (l *Link) GetTypedMetadata(metadata interface{}) error {
+func (l *Link) StructurizeMetadata(metadata interface{}) error {
 	switch l.Version {
 	case LinkVersion1_0_0:
 		return json.Unmarshal(l.Meta.Data, metadata)
@@ -136,9 +136,9 @@ func (l *Link) PrevLinkHash() []byte {
 	return l.Meta.PrevLinkHash
 }
 
-// GetTagMap returns the tags as a map of string to empty structs (a set).
+// TagMap returns the tags as a map of string to empty structs (a set).
 // It makes it easier to test inclusion.
-func (l *Link) GetTagMap() map[string]struct{} {
+func (l *Link) TagMap() map[string]struct{} {
 	tags := make(map[string]struct{})
 	for _, v := range l.Meta.Tags {
 		tags[v] = struct{}{}
