@@ -15,6 +15,7 @@
 package chainscript
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 
@@ -36,7 +37,11 @@ const (
 // Link errors.
 var (
 	ErrUnknownLinkVersion = errors.New("unknown link version")
+	ErrRefNotFound        = errors.New("referenced link could not be retrieved")
 )
+
+// GetSegmentFunc is the function signature to retrieve a Segment.
+type GetSegmentFunc func(ctx context.Context, linkHash []byte) (*Segment, error)
 
 // Hash serializes the link and computes a hash of the resulting bytes.
 // The serialization and hashing algorithm used depend on the link version.
@@ -113,4 +118,38 @@ func (l *Link) Clone() (*Link, error) {
 	}
 
 	return &clone, nil
+}
+
+// Validate checks for errors in a link.
+func (l *Link) Validate(ctx context.Context, getSegment GetSegmentFunc) error {
+	if l.Meta.Process == nil || len(l.Meta.Process.Name) == 0 {
+		return ErrMissingProcess
+	}
+	if len(l.Meta.MapId) == 0 {
+		return ErrMissingMapID
+	}
+
+	if _, err := l.Hash(); err != nil {
+		return err
+	}
+
+	for _, ref := range l.Meta.Refs {
+		if len(ref.Process) == 0 {
+			return ErrMissingProcess
+		}
+
+		if len(ref.LinkHash) == 0 {
+			return ErrMissingLinkHash
+		}
+
+		// We only check the referenced segment if it's in the same process.
+		if l.Meta.Process.Name == ref.Process && getSegment != nil {
+			seg, err := getSegment(ctx, ref.LinkHash)
+			if err != nil || seg == nil {
+				return ErrRefNotFound
+			}
+		}
+	}
+
+	return nil
 }
