@@ -138,7 +138,7 @@ message LinkMeta {
 // A reference to a link that can be in another process.
 message LinkReference {
     // Hash of the referenced link.
-    bytes prev_link_hash = 1;
+    bytes link_hash = 1;
     // Process containing the referenced link.
     string process = 10;
 }
