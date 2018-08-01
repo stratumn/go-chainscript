@@ -41,8 +41,7 @@ test:
 coverage: $(COVERAGE_FILE)
 
 $(COVERAGE_FILE):
-	go test ./... -coverprofile=$(COVERAGE_FILE).tmp -covermode=atomic
-	cat $(COVERAGE_FILE).tmp | grep -v ".pb.go" > $(COVERAGE_FILE)
+	go test ./... -coverprofile=$(COVERAGE_FILE) -covermode=atomic
 
 # == protobuf =================================================================
 protobuf: $(PROTOS_GO)
