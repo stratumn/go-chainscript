@@ -6,8 +6,11 @@ PROTOS_GO=$(PROTOS:.proto=.pb.go)
 GO_LINT_CMD=golangci-lint
 GO_LINT=$(GO_LINT_CMD) run --build-tags="lint" --deadline=4m --disable="ineffassign" --disable="gas" --tests=false --skip-files=".*\\.pb.go"
 
+# Test parameters
+COVERAGE_FILE=coverage.txt
+
 # == .PHONY ===================================================================
-.PHONY: dep golangcilint deps build lint test protobuf update_chainscript
+.PHONY: dep golangcilint deps build lint test coverage protobuf update_chainscript
 
 # == all ======================================================================
 all: build
@@ -33,6 +36,13 @@ lint:
 # == test =====================================================================
 test:
 	go test ./...
+
+# == coverage =================================================================
+coverage: $(COVERAGE_FILE)
+
+$(COVERAGE_FILE):
+	go test ./... -coverprofile=$(COVERAGE_FILE).tmp -covermode=atomic
+	cat $(COVERAGE_FILE).tmp | grep -v ".pb.go" > $(COVERAGE_FILE)
 
 # == protobuf =================================================================
 protobuf: $(PROTOS_GO)
