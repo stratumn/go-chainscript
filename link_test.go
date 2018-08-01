@@ -19,24 +19,85 @@ import (
 	"testing"
 
 	"github.com/stratumn/go-chainscript"
+	"github.com/stratumn/go-chainscript/chainscripttest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+func TestLink_Data(t *testing.T) {
+	t.Run("unknown version", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithVersion("0.42.63").Build()
+
+		err := l.SetData("yolo")
+		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+
+		var data string
+		err = l.GetTypedData(data)
+		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+	})
+
+	t.Run("version 1.0.0", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).Build()
+		require.Nil(t, l.Data)
+
+		data := map[string]interface{}{
+			"user": "spongebob",
+			"id":   123,
+		}
+		err := l.SetData(data)
+		require.NoError(t, err)
+		require.NotNil(t, l.Data)
+
+		var data2 map[string]interface{}
+		err = l.GetTypedData(&data2)
+		require.NoError(t, err)
+		assert.Len(t, data2, 2)
+		assert.Equal(t, "spongebob", data2["user"])
+		// In version 1.0.0 we use JSON marshalling which only uses float64 for
+		// numeric values. So we need an explicit convertion to get an int.
+		assert.Equal(t, 123, int(data2["id"].(float64)))
+	})
+}
+
+func TestLink_Metadata(t *testing.T) {
+	t.Run("unknown version", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithVersion("0.42.63").Build()
+
+		err := l.SetMetadata("yolo")
+		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+
+		var metadata string
+		err = l.GetTypedMetadata(metadata)
+		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+	})
+
+	t.Run("version 1.0.0", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).Build()
+		require.Nil(t, l.Meta.Data)
+
+		err := l.SetMetadata("spongebob rocks")
+		require.NoError(t, err)
+		require.NotNil(t, l.Meta.Data)
+
+		var metadata string
+		err = l.GetTypedMetadata(&metadata)
+		require.NoError(t, err)
+		assert.Equal(t, "spongebob rocks", metadata)
+	})
+}
+
 func TestLink_Hash(t *testing.T) {
 	t.Run("unknown version", func(t *testing.T) {
-		l, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
-		l.Version = "0.42.0"
-
+		l := chainscripttest.NewLinkBuilder(t).WithVersion("0.42.63").Build()
 		lh, err := l.Hash()
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 		assert.Nil(t, lh)
 	})
 
 	t.Run("version 1.0.0", func(t *testing.T) {
-		l1, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
-		l2, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
-		l3, _ := chainscript.NewLinkBuilder("p2", "m42").Build()
+		l1 := chainscripttest.NewLinkBuilder(t).Build()
+		l2 := chainscripttest.NewLinkBuilder(t).Build()
+		l3 := chainscripttest.NewLinkBuilder(t).WithRandomData().Build()
 
 		h1, err := l1.Hash()
 		require.NoError(t, err)
@@ -53,27 +114,26 @@ func TestLink_Hash(t *testing.T) {
 }
 
 func TestLink_HashString(t *testing.T) {
-	l, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
-
+	l := chainscripttest.NewLinkBuilder(t).Build()
 	h, err := l.HashString()
 	require.NoError(t, err)
 	assert.NotEmpty(t, h)
 }
 
 func TestLink_PrevLinkHash(t *testing.T) {
-	l1, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
-	assert.Nil(t, l1.PrevLinkHash())
+	l := chainscripttest.NewLinkBuilder(t).Build()
+	assert.Nil(t, l.PrevLinkHash())
 }
 
 func TestLink_GetTagMap(t *testing.T) {
 	t.Run("empty tags", func(t *testing.T) {
-		l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+		l := chainscripttest.NewLinkBuilder(t).Build()
 		tags := l.GetTagMap()
 		assert.Empty(t, tags)
 	})
 
 	t.Run("with tags", func(t *testing.T) {
-		l, _ := chainscript.NewLinkBuilder("p", "m").WithTags("t1", "t2").Build()
+		l := chainscripttest.NewLinkBuilder(t).WithTags("t1", "t2").Build()
 		tags := l.GetTagMap()
 		assert.Contains(t, tags, "t1")
 		assert.Contains(t, tags, "t2")
@@ -82,7 +142,7 @@ func TestLink_GetTagMap(t *testing.T) {
 }
 
 func TestLink_Clone(t *testing.T) {
-	l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+	l := chainscripttest.NewLinkBuilder(t).Build()
 
 	ll, err := l.Clone()
 	require.NoError(t, err)
@@ -92,8 +152,9 @@ func TestLink_Clone(t *testing.T) {
 }
 
 func TestLink_Segmentify(t *testing.T) {
-	l, _ := chainscript.NewLinkBuilder("p", "m").Build()
-	lh, _ := l.Hash()
+	l := chainscripttest.NewLinkBuilder(t).Build()
+	lh, err := l.Hash()
+	require.NoError(t, err)
 
 	s, err := l.Segmentify()
 	require.NoError(t, err)
@@ -110,8 +171,7 @@ func TestLink_Validate(t *testing.T) {
 	}{{
 		"missing process",
 		func(*testing.T) *chainscript.Link {
-			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
-			l.Meta.Process = nil
+			l := chainscripttest.NewLinkBuilder(t).WithProcess("").Build()
 			return l
 		},
 		nil,
@@ -119,8 +179,7 @@ func TestLink_Validate(t *testing.T) {
 	}, {
 		"missing map ID",
 		func(*testing.T) *chainscript.Link {
-			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
-			l.Meta.MapId = ""
+			l := chainscripttest.NewLinkBuilder(t).WithMapID("").Build()
 			return l
 		},
 		nil,
@@ -128,7 +187,7 @@ func TestLink_Validate(t *testing.T) {
 	}, {
 		"invalid ref",
 		func(*testing.T) *chainscript.Link {
-			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l := chainscripttest.NewLinkBuilder(t).Build()
 			l.Meta.Refs = []*chainscript.LinkReference{
 				&chainscript.LinkReference{Process: "p"},
 			}
@@ -139,9 +198,9 @@ func TestLink_Validate(t *testing.T) {
 	}, {
 		"missing ref",
 		func(*testing.T) *chainscript.Link {
-			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l := chainscripttest.NewLinkBuilder(t).Build()
 			l.Meta.Refs = []*chainscript.LinkReference{
-				&chainscript.LinkReference{Process: "p", LinkHash: make([]byte, 32)},
+				&chainscript.LinkReference{Process: l.Meta.Process.Name, LinkHash: make([]byte, 32)},
 			}
 			return l
 		},
@@ -152,7 +211,7 @@ func TestLink_Validate(t *testing.T) {
 	}, {
 		"valid refs",
 		func(*testing.T) *chainscript.Link {
-			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l := chainscripttest.NewLinkBuilder(t).Build()
 			l.Meta.Refs = []*chainscript.LinkReference{
 				&chainscript.LinkReference{Process: "p", LinkHash: make([]byte, 32)},
 				&chainscript.LinkReference{Process: "p2", LinkHash: make([]byte, 32)},
@@ -160,7 +219,7 @@ func TestLink_Validate(t *testing.T) {
 			return l
 		},
 		func(context.Context, []byte) (*chainscript.Segment, error) {
-			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l := chainscripttest.NewLinkBuilder(t).Build()
 			s, _ := l.Segmentify()
 			return s, nil
 		},
