@@ -48,10 +48,13 @@ func TestLinkBuilder(t *testing.T) {
 		nil,
 		chainscript.ErrMissingMapID,
 	}, {
-		"version",
+		"default values",
 		chainscript.NewLinkBuilder(process, mapID),
 		func(t *testing.T, l *chainscript.Link) {
 			assert.Equal(t, chainscript.LinkVersion, l.Version)
+			assert.Equal(t, 0.0, l.Meta.Priority)
+			assert.Nil(t, l.Data)
+			assert.Nil(t, l.Meta.Data)
 		},
 		nil,
 	}, {
