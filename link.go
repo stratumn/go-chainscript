@@ -43,6 +43,62 @@ var (
 // GetSegmentFunc is the function signature to retrieve a Segment.
 type GetSegmentFunc func(ctx context.Context, linkHash []byte) (*Segment, error)
 
+// SetData uses the given object as link's custom data.
+func (l *Link) SetData(data interface{}) error {
+	switch l.Version {
+	case LinkVersion1_0_0:
+		dataBytes, err := json.Marshal(data)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		l.Data = dataBytes
+	default:
+		return ErrUnknownLinkVersion
+	}
+
+	return nil
+}
+
+// StructurizeData deserializes the link's data into the given object.
+// The provided argument should be a pointer to a struct.
+func (l *Link) StructurizeData(data interface{}) error {
+	switch l.Version {
+	case LinkVersion1_0_0:
+		return json.Unmarshal(l.Data, data)
+	default:
+		return ErrUnknownLinkVersion
+	}
+}
+
+// SetMetadata uses the given object as link's custom metadata.
+func (l *Link) SetMetadata(metadata interface{}) error {
+	switch l.Version {
+	case LinkVersion1_0_0:
+		metadataBytes, err := json.Marshal(metadata)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		l.Meta.Data = metadataBytes
+	default:
+		return ErrUnknownLinkVersion
+	}
+
+	return nil
+}
+
+// StructurizeMetadata deserializes the link's metadata into the given object.
+// The provided argument should be a pointer to a struct.
+func (l *Link) StructurizeMetadata(metadata interface{}) error {
+	switch l.Version {
+	case LinkVersion1_0_0:
+		return json.Unmarshal(l.Meta.Data, metadata)
+	default:
+		return ErrUnknownLinkVersion
+	}
+}
+
 // Hash serializes the link and computes a hash of the resulting bytes.
 // The serialization and hashing algorithm used depend on the link version.
 func (l *Link) Hash() ([]byte, error) {
@@ -80,9 +136,9 @@ func (l *Link) PrevLinkHash() []byte {
 	return l.Meta.PrevLinkHash
 }
 
-// GetTagMap returns the tags as a map of string to empty structs (a set).
+// TagMap returns the tags as a map of string to empty structs (a set).
 // It makes it easier to test inclusion.
-func (l *Link) GetTagMap() map[string]struct{} {
+func (l *Link) TagMap() map[string]struct{} {
 	tags := make(map[string]struct{})
 	for _, v := range l.Meta.Tags {
 		tags[v] = struct{}{}

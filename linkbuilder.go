@@ -17,7 +17,6 @@ package chainscript
 import (
 	"encoding/hex"
 
-	json "github.com/gibson042/canonicaljson-go"
 	"github.com/pkg/errors"
 )
 
@@ -76,25 +75,23 @@ func (b *LinkBuilder) WithAction(action string) *LinkBuilder {
 
 // WithData uses the given object as link's custom data.
 func (b *LinkBuilder) WithData(data interface{}) *LinkBuilder {
-	dataBytes, err := json.Marshal(data)
+	err := b.link.SetData(data)
 	if err != nil {
-		b.err = errors.WithStack(err)
+		b.err = err
 		return b
 	}
 
-	b.link.Data = dataBytes
 	return b
 }
 
 // WithMetadata uses the given object as link's custom metadata.
 func (b *LinkBuilder) WithMetadata(data interface{}) *LinkBuilder {
-	metadataBytes, err := json.Marshal(data)
+	err := b.link.SetMetadata(data)
 	if err != nil {
-		b.err = errors.WithStack(err)
+		b.err = err
 		return b
 	}
 
-	b.link.Meta.Data = metadataBytes
 	return b
 }
 

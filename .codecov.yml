@@ -5,11 +5,19 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "70...100"
+  range: "65...90"
 
   status:
-    project: yes
-    patch: yes
+    project:
+      default:
+        target: 70
+        threshold: 2
+        base: auto
+    patch:
+      default:
+        target: 70
+        threshold: 2
+        base: auto
     changes: no
 
 parsers:
@@ -22,6 +30,7 @@ parsers:
 
 ignore:
   - "*.pb.go"
+  - "chainscripttest"
 
 comment:
   layout: "header, diff"
