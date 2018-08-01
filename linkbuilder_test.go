@@ -48,10 +48,13 @@ func TestLinkBuilder(t *testing.T) {
 		nil,
 		chainscript.ErrMissingMapID,
 	}, {
-		"version",
+		"default values",
 		chainscript.NewLinkBuilder(process, mapID),
 		func(t *testing.T, l *chainscript.Link) {
 			assert.Equal(t, chainscript.LinkVersion, l.Version)
+			assert.Equal(t, 0.0, l.Meta.Priority)
+			assert.Nil(t, l.Data)
+			assert.Nil(t, l.Meta.Data)
 		},
 		nil,
 	}, {
@@ -73,6 +76,13 @@ func TestLinkBuilder(t *testing.T) {
 		chainscript.NewLinkBuilder(process, mapID).WithPriority(0.42),
 		func(t *testing.T, l *chainscript.Link) {
 			assert.Equal(t, 0.42, l.Meta.Priority)
+		},
+		nil,
+	}, {
+		"lowest priority",
+		chainscript.NewLinkBuilder(process, mapID).WithPriority(0.0),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, 0.0, l.Meta.Priority)
 		},
 		nil,
 	}, {
@@ -137,6 +147,25 @@ func TestLinkBuilder(t *testing.T) {
 		),
 		nil,
 		chainscript.ErrMissingProcess,
+	}, {
+		"custom data",
+		chainscript.NewLinkBuilder(process, mapID).WithData(map[string]string{
+			"orderID":     "123",
+			"description": "stuff",
+		}),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.NotEmpty(t, l.Data)
+		},
+		nil,
+	}, {
+		"custom metadata",
+		chainscript.NewLinkBuilder(process, mapID).WithMetadata(map[string]string{
+			"orderDate": "Monday",
+		}),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.NotEmpty(t, l.Meta.Data)
+		},
+		nil,
 	}}
 
 	for _, tt := range testCases {

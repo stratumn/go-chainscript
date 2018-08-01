@@ -17,6 +17,7 @@ package chainscript
 import (
 	"encoding/hex"
 
+	json "github.com/gibson042/canonicaljson-go"
 	"github.com/pkg/errors"
 )
 
@@ -73,6 +74,30 @@ func (b *LinkBuilder) WithAction(action string) *LinkBuilder {
 	return b
 }
 
+// WithData uses the given object as link's custom data.
+func (b *LinkBuilder) WithData(data interface{}) *LinkBuilder {
+	dataBytes, err := json.Marshal(data)
+	if err != nil {
+		b.err = errors.WithStack(err)
+		return b
+	}
+
+	b.link.Data = dataBytes
+	return b
+}
+
+// WithMetadata uses the given object as link's custom metadata.
+func (b *LinkBuilder) WithMetadata(data interface{}) *LinkBuilder {
+	metadataBytes, err := json.Marshal(data)
+	if err != nil {
+		b.err = errors.WithStack(err)
+		return b
+	}
+
+	b.link.Meta.Data = metadataBytes
+	return b
+}
+
 // WithParent sets the link's parent, referenced by its hash.
 func (b *LinkBuilder) WithParent(linkHash []byte) *LinkBuilder {
 	if len(linkHash) == 0 {
@@ -86,7 +111,7 @@ func (b *LinkBuilder) WithParent(linkHash []byte) *LinkBuilder {
 
 // WithPriority sets the link's priority.
 func (b *LinkBuilder) WithPriority(priority float64) *LinkBuilder {
-	if priority <= 0 {
+	if priority < 0 {
 		b.err = ErrInvalidPriority
 		return b
 	}

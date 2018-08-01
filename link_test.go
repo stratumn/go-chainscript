@@ -15,6 +15,7 @@
 package chainscript_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stratumn/go-chainscript"
@@ -62,4 +63,119 @@ func TestLink_HashString(t *testing.T) {
 func TestLink_PrevLinkHash(t *testing.T) {
 	l1, _ := chainscript.NewLinkBuilder("p1", "m1").Build()
 	assert.Nil(t, l1.PrevLinkHash())
+}
+
+func TestLink_GetTagMap(t *testing.T) {
+	t.Run("empty tags", func(t *testing.T) {
+		l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+		tags := l.GetTagMap()
+		assert.Empty(t, tags)
+	})
+
+	t.Run("with tags", func(t *testing.T) {
+		l, _ := chainscript.NewLinkBuilder("p", "m").WithTags("t1", "t2").Build()
+		tags := l.GetTagMap()
+		assert.Contains(t, tags, "t1")
+		assert.Contains(t, tags, "t2")
+		assert.NotContains(t, tags, "t3")
+	})
+}
+
+func TestLink_Clone(t *testing.T) {
+	l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+
+	ll, err := l.Clone()
+	require.NoError(t, err)
+
+	assert.Equal(t, l, ll)
+	assert.False(t, l == ll)
+}
+
+func TestLink_Segmentify(t *testing.T) {
+	l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+	lh, _ := l.Hash()
+
+	s, err := l.Segmentify()
+	require.NoError(t, err)
+	assert.Equal(t, l, s.Link)
+	assert.Equal(t, lh, s.Meta.LinkHash)
+}
+
+func TestLink_Validate(t *testing.T) {
+	testCases := []struct {
+		name       string
+		link       func(*testing.T) *chainscript.Link
+		getSegment chainscript.GetSegmentFunc
+		err        error
+	}{{
+		"missing process",
+		func(*testing.T) *chainscript.Link {
+			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l.Meta.Process = nil
+			return l
+		},
+		nil,
+		chainscript.ErrMissingProcess,
+	}, {
+		"missing map ID",
+		func(*testing.T) *chainscript.Link {
+			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l.Meta.MapId = ""
+			return l
+		},
+		nil,
+		chainscript.ErrMissingMapID,
+	}, {
+		"invalid ref",
+		func(*testing.T) *chainscript.Link {
+			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l.Meta.Refs = []*chainscript.LinkReference{
+				&chainscript.LinkReference{Process: "p"},
+			}
+			return l
+		},
+		nil,
+		chainscript.ErrMissingLinkHash,
+	}, {
+		"missing ref",
+		func(*testing.T) *chainscript.Link {
+			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l.Meta.Refs = []*chainscript.LinkReference{
+				&chainscript.LinkReference{Process: "p", LinkHash: make([]byte, 32)},
+			}
+			return l
+		},
+		func(context.Context, []byte) (*chainscript.Segment, error) {
+			return nil, nil
+		},
+		chainscript.ErrRefNotFound,
+	}, {
+		"valid refs",
+		func(*testing.T) *chainscript.Link {
+			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			l.Meta.Refs = []*chainscript.LinkReference{
+				&chainscript.LinkReference{Process: "p", LinkHash: make([]byte, 32)},
+				&chainscript.LinkReference{Process: "p2", LinkHash: make([]byte, 32)},
+			}
+			return l
+		},
+		func(context.Context, []byte) (*chainscript.Segment, error) {
+			l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+			s, _ := l.Segmentify()
+			return s, nil
+		},
+		nil,
+	}}
+
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			l := tt.link(t)
+			err := l.Validate(context.Background(), tt.getSegment)
+			if tt.err != nil {
+				assert.EqualError(t, err, tt.err.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
