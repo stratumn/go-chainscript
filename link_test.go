@@ -79,3 +79,13 @@ func TestLink_GetTagMap(t *testing.T) {
 		assert.NotContains(t, tags, "t3")
 	})
 }
+
+func TestLink_Segmentify(t *testing.T) {
+	l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+	lh, _ := l.Hash()
+
+	s, err := l.Segmentify()
+	require.NoError(t, err)
+	assert.Equal(t, l, s.Link)
+	assert.Equal(t, lh, s.Meta.LinkHash)
+}

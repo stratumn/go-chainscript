@@ -83,3 +83,18 @@ func (l *Link) GetTagMap() map[string]struct{} {
 	}
 	return tags
 }
+
+// Segmentify returns a segment from a link, filling the link hash.
+func (l *Link) Segmentify() (*Segment, error) {
+	lh, err := l.Hash()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return &Segment{
+		Link: l,
+		Meta: &SegmentMeta{
+			LinkHash: lh,
+		},
+	}, nil
+}
