@@ -18,6 +18,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 
+	json "github.com/gibson042/canonicaljson-go"
 	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 )
@@ -97,4 +98,19 @@ func (l *Link) Segmentify() (*Segment, error) {
 			LinkHash: lh,
 		},
 	}, nil
+}
+
+// Clone returns a copy of the link.
+func (l *Link) Clone() (*Link, error) {
+	var clone Link
+	js, err := json.Marshal(l)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	if err := json.Unmarshal(js, &clone); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return &clone, nil
 }

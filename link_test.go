@@ -80,6 +80,16 @@ func TestLink_GetTagMap(t *testing.T) {
 	})
 }
 
+func TestLink_Clone(t *testing.T) {
+	l, _ := chainscript.NewLinkBuilder("p", "m").Build()
+
+	ll, err := l.Clone()
+	require.NoError(t, err)
+
+	assert.Equal(t, l, ll)
+	assert.False(t, l == ll)
+}
+
 func TestLink_Segmentify(t *testing.T) {
 	l, _ := chainscript.NewLinkBuilder("p", "m").Build()
 	lh, _ := l.Hash()
