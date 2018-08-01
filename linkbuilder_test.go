@@ -79,6 +79,13 @@ func TestLinkBuilder(t *testing.T) {
 		},
 		nil,
 	}, {
+		"lowest priority",
+		chainscript.NewLinkBuilder(process, mapID).WithPriority(0.0),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, 0.0, l.Meta.Priority)
+		},
+		nil,
+	}, {
 		"negative priority",
 		chainscript.NewLinkBuilder(process, mapID).WithPriority(-0.42),
 		nil,

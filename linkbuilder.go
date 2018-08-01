@@ -111,7 +111,7 @@ func (b *LinkBuilder) WithParent(linkHash []byte) *LinkBuilder {
 
 // WithPriority sets the link's priority.
 func (b *LinkBuilder) WithPriority(priority float64) *LinkBuilder {
-	if priority <= 0 {
+	if priority < 0 {
 		b.err = ErrInvalidPriority
 		return b
 	}
