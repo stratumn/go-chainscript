@@ -22,6 +22,7 @@ parsers:
 
 ignore:
   - "*.pb.go"
+  - "chainscripttest"
 
 comment:
   layout: "header, diff"
