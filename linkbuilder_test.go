@@ -117,14 +117,14 @@ func TestLinkBuilder(t *testing.T) {
 	}, {
 		"refs",
 		chainscript.NewLinkBuilder(process, mapID).WithRefs(
-			&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
-			&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
-			&chainscript.LinkReference{Process: process, PrevLinkHash: make([]byte, 32)},
+			&chainscript.LinkReference{Process: process, LinkHash: testLinkHash},
+			&chainscript.LinkReference{Process: process, LinkHash: testLinkHash},
+			&chainscript.LinkReference{Process: process, LinkHash: make([]byte, 32)},
 		),
 		func(t *testing.T, l *chainscript.Link) {
 			expected := []*chainscript.LinkReference{
-				&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
-				&chainscript.LinkReference{Process: process, PrevLinkHash: make([]byte, 32)},
+				&chainscript.LinkReference{Process: process, LinkHash: testLinkHash},
+				&chainscript.LinkReference{Process: process, LinkHash: make([]byte, 32)},
 			}
 			assert.ElementsMatch(t, expected, l.Meta.Refs)
 		},
@@ -132,8 +132,8 @@ func TestLinkBuilder(t *testing.T) {
 	}, {
 		"invalid refs",
 		chainscript.NewLinkBuilder(process, mapID).WithRefs(
-			&chainscript.LinkReference{Process: "", PrevLinkHash: testLinkHash},
-			&chainscript.LinkReference{Process: process, PrevLinkHash: testLinkHash},
+			&chainscript.LinkReference{Process: "", LinkHash: testLinkHash},
+			&chainscript.LinkReference{Process: process, LinkHash: testLinkHash},
 		),
 		nil,
 		chainscript.ErrMissingProcess,

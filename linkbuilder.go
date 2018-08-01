@@ -115,12 +115,12 @@ func (b *LinkBuilder) WithRefs(refs ...*LinkReference) *LinkBuilder {
 			return b
 		}
 
-		if len(ref.PrevLinkHash) == 0 {
+		if len(ref.LinkHash) == 0 {
 			b.err = ErrMissingLinkHash
 			return b
 		}
 
-		hexLinkHash := hex.EncodeToString(ref.PrevLinkHash)
+		hexLinkHash := hex.EncodeToString(ref.LinkHash)
 		if _, ok := b.refs[hexLinkHash]; ok {
 			continue
 		}
