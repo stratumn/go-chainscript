@@ -26,3 +26,7 @@ To get the latest ChainScript definitions in this project, run:
 ```bash
 make update_chainscript
 ```
+
+Note that when you update the git subtree, you must not squash your commits
+when merging to the master branch, otherwise the subtree update will fail
+because it will be unable to find the previous subtree commit.
