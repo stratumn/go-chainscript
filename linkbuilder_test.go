@@ -137,6 +137,25 @@ func TestLinkBuilder(t *testing.T) {
 		),
 		nil,
 		chainscript.ErrMissingProcess,
+	}, {
+		"custom data",
+		chainscript.NewLinkBuilder(process, mapID).WithData(map[string]string{
+			"orderID":     "123",
+			"description": "stuff",
+		}),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.NotEmpty(t, l.Data)
+		},
+		nil,
+	}, {
+		"custom metadata",
+		chainscript.NewLinkBuilder(process, mapID).WithMetadata(map[string]string{
+			"orderDate": "Monday",
+		}),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.NotEmpty(t, l.Meta.Data)
+		},
+		nil,
 	}}
 
 	for _, tt := range testCases {
