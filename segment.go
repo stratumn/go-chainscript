@@ -76,17 +76,9 @@ func (s *Segment) Validate(ctx context.Context, getSegment GetSegmentFunc) error
 
 // AddEvidence adds an evidence to the segment.
 func (s *Segment) AddEvidence(evidence *Evidence) error {
-	if len(evidence.Version) == 0 {
-		return ErrMissingVersion
-	}
-	if len(evidence.Backend) == 0 {
-		return ErrMissingBackend
-	}
-	if len(evidence.Provider) == 0 {
-		return ErrMissingProvider
-	}
-	if len(evidence.Proof) == 0 {
-		return ErrMissingProof
+	err := evidence.Validate()
+	if err != nil {
+		return err
 	}
 
 	if e := s.GetEvidence(evidence.Backend, evidence.Provider); e != nil {
