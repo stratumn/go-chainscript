@@ -19,21 +19,9 @@ import (
 
 	"github.com/stratumn/go-chainscript"
 	"github.com/stratumn/go-chainscript/chainscripttest"
-	"github.com/stratumn/go-crypto/keys"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-// GeneratePrivateKey generates a private key that can be used to sign links.
-func GeneratePrivateKey(t *testing.T) []byte {
-	_, privKey, err := keys.NewEd25519KeyPair()
-	require.NoError(t, err)
-
-	keyBytes, err := keys.EncodeED25519SecretKey(privKey)
-	require.NoError(t, err)
-
-	return keyBytes
-}
 
 func TestLink_Sign(t *testing.T) {
 	t.Run("invalid private key", func(t *testing.T) {
@@ -44,7 +32,7 @@ func TestLink_Sign(t *testing.T) {
 	})
 
 	t.Run("invalid payload path", func(t *testing.T) {
-		sk := GeneratePrivateKey(t)
+		sk := chainscripttest.RandomPrivateKey(t)
 		l := chainscripttest.NewLinkBuilder(t).Build()
 
 		err := l.Sign(sk, "[version")
@@ -53,8 +41,8 @@ func TestLink_Sign(t *testing.T) {
 	})
 
 	t.Run("valid signatures", func(t *testing.T) {
-		sk1 := GeneratePrivateKey(t)
-		sk2 := GeneratePrivateKey(t)
+		sk1 := chainscripttest.RandomPrivateKey(t)
+		sk2 := chainscripttest.RandomPrivateKey(t)
 		l := chainscripttest.NewLinkBuilder(t).Build()
 
 		payloadPaths := []string{"", "[data]"}
@@ -86,7 +74,7 @@ func TestLink_SignedBytes(t *testing.T) {
 		v1 := chainscript.SignatureVersion1_0_0
 
 		t.Run("include data and meta if no path provided", func(t *testing.T) {
-			l := chainscripttest.NewLinkBuilder(t).WithData("b4tm4n").Build()
+			l := chainscripttest.NewLinkBuilder(t).WithData(t, "b4tm4n").Build()
 
 			b1, err := l.SignedBytes(v1, "[version,data,meta]")
 			require.NoError(t, err)
@@ -109,7 +97,7 @@ func TestLink_SignedBytes(t *testing.T) {
 			b1, err := l.SignedBytes(v1, "")
 			require.NoError(t, err)
 
-			err = l.Sign(GeneratePrivateKey(t), "")
+			err = l.Sign(chainscripttest.RandomPrivateKey(t), "")
 			require.NoError(t, err)
 			require.Len(t, l.Signatures, 1)
 
@@ -135,7 +123,7 @@ func TestLink_SignedBytes(t *testing.T) {
 		})
 
 		t.Run("partial meta and link data", func(t *testing.T) {
-			l1 := chainscripttest.NewLinkBuilder(t).WithData(map[string]int{
+			l1 := chainscripttest.NewLinkBuilder(t).WithData(t, map[string]int{
 				"user":   42,
 				"random": 63,
 			}).Build()

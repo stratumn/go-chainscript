@@ -16,6 +16,10 @@ package chainscripttest
 
 import (
 	"math/rand"
+	"testing"
+
+	"github.com/stratumn/go-crypto/keys"
+	"github.com/stretchr/testify/require"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -39,4 +43,15 @@ func RandomString(n int) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
+}
+
+// RandomPrivateKey generates a private key that can be used to sign links.
+func RandomPrivateKey(t *testing.T) []byte {
+	_, privKey, err := keys.NewEd25519KeyPair()
+	require.NoError(t, err)
+
+	keyBytes, err := keys.EncodeED25519SecretKey(privKey)
+	require.NoError(t, err)
+
+	return keyBytes
 }
