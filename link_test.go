@@ -169,6 +169,14 @@ func TestLink_Validate(t *testing.T) {
 		getSegment chainscript.GetSegmentFunc
 		err        error
 	}{{
+		"missing version",
+		func(*testing.T) *chainscript.Link {
+			l := chainscripttest.NewLinkBuilder(t).WithVersion("").Build()
+			return l
+		},
+		nil,
+		chainscript.ErrMissingVersion,
+	}, {
 		"missing process",
 		func(*testing.T) *chainscript.Link {
 			l := chainscripttest.NewLinkBuilder(t).WithProcess("").Build()

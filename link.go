@@ -36,6 +36,7 @@ const (
 
 // Link errors.
 var (
+	ErrMissingVersion     = errors.New("version is missing")
 	ErrUnknownLinkVersion = errors.New("unknown link version")
 	ErrRefNotFound        = errors.New("referenced link could not be retrieved")
 )
@@ -178,6 +179,9 @@ func (l *Link) Clone() (*Link, error) {
 
 // Validate checks for errors in a link.
 func (l *Link) Validate(ctx context.Context, getSegment GetSegmentFunc) error {
+	if len(l.Version) == 0 {
+		return ErrMissingVersion
+	}
 	if l.Meta.Process == nil || len(l.Meta.Process.Name) == 0 {
 		return ErrMissingProcess
 	}
