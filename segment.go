@@ -24,7 +24,11 @@ import (
 
 // Segment errors.
 var (
-	ErrLinkHashMismatch = errors.New("link hash from meta doesn't equal hashed link")
+	ErrLinkHashMismatch  = errors.New("link hash from meta doesn't equal hashed link")
+	ErrMissingBackend    = errors.New("evidence backend is missing")
+	ErrMissingProvider   = errors.New("evidence provider is missing")
+	ErrMissingProof      = errors.New("evidence proof is missing")
+	ErrDuplicateEvidence = errors.New("evidence already exists for the given backend and provider")
 )
 
 // LinkHash returns the link hash.
@@ -68,4 +72,54 @@ func (s *Segment) Validate(ctx context.Context, getSegment GetSegmentFunc) error
 	}
 
 	return s.Link.Validate(ctx, getSegment)
+}
+
+// AddEvidence adds an evidence to the segment.
+func (s *Segment) AddEvidence(evidence *Evidence) error {
+	err := evidence.Validate()
+	if err != nil {
+		return err
+	}
+
+	if e := s.GetEvidence(evidence.Backend, evidence.Provider); e != nil {
+		return ErrDuplicateEvidence
+	}
+
+	if s.Meta == nil {
+		s.Meta = &SegmentMeta{}
+	}
+
+	s.Meta.Evidences = append(s.Meta.Evidences, evidence)
+	return nil
+}
+
+// GetEvidence gets an evidence from a provider in a given backend.
+func (s *Segment) GetEvidence(backend, provider string) *Evidence {
+	if s.Meta == nil {
+		return nil
+	}
+
+	for _, e := range s.Meta.Evidences {
+		if e.Backend == backend && e.Provider == provider {
+			return e
+		}
+	}
+
+	return nil
+}
+
+// FindEvidences finds all evidences from a specific backend.
+func (s *Segment) FindEvidences(backend string) []*Evidence {
+	if s.Meta == nil {
+		return nil
+	}
+
+	var results []*Evidence
+	for _, e := range s.Meta.Evidences {
+		if e.Backend == backend {
+			results = append(results, e)
+		}
+	}
+
+	return results
 }
