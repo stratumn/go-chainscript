@@ -65,6 +65,12 @@ func (lb *LinkBuilder) WithAction(action string) *LinkBuilder {
 	return lb
 }
 
+// WithClientID sets the link's clientID.
+func (lb *LinkBuilder) WithClientID(clientID string) *LinkBuilder {
+	lb.Link.Meta.ClientId = clientID
+	return lb
+}
+
 // WithData fills the link's data.
 func (lb *LinkBuilder) WithData(t *testing.T, data interface{}) *LinkBuilder {
 	err := lb.Link.SetData(data)

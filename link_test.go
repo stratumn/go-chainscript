@@ -32,8 +32,31 @@ func TestLink_Data(t *testing.T) {
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 
 		var data string
-		err = l.StructurizeData(data)
+		err = l.StructurizeData(&data)
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+	})
+
+	t.Run("unknown client ID", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/someguy/someapp").Build()
+
+		err := l.SetData("yolo")
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+
+		var data string
+		err = l.StructurizeData(&data)
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+	})
+
+	t.Run("js-chainscript interoperability", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/stratumn/js-chainscript").Build()
+
+		err := l.SetData("yolo")
+		require.NoError(t, err)
+
+		var data string
+		err = l.StructurizeData(&data)
+		require.NoError(t, err)
+		assert.Equal(t, "yolo", data)
 	})
 
 	t.Run("version 1.0.0", func(t *testing.T) {
@@ -67,8 +90,31 @@ func TestLink_Metadata(t *testing.T) {
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 
 		var metadata string
-		err = l.StructurizeMetadata(metadata)
+		err = l.StructurizeMetadata(&metadata)
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+	})
+
+	t.Run("unknown client ID", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/someguy/someapp").Build()
+
+		err := l.SetMetadata("yolo")
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+
+		var metadata string
+		err = l.StructurizeMetadata(&metadata)
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+	})
+
+	t.Run("js-chainscript interoperability", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/stratumn/js-chainscript").Build()
+
+		err := l.SetMetadata("yolo")
+		require.NoError(t, err)
+
+		var metadata string
+		err = l.StructurizeMetadata(&metadata)
+		require.NoError(t, err)
+		assert.Equal(t, "yolo", metadata)
 	})
 
 	t.Run("version 1.0.0", func(t *testing.T) {
