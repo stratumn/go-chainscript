@@ -56,7 +56,7 @@ func TestLink_Sign(t *testing.T) {
 		for i, s := range l.Signatures {
 			assert.Equal(t, chainscript.SignatureVersion, s.Version)
 			assert.Equal(t, payloadPaths[i], s.PayloadPath)
-			assert.Equal(t, "ED25519", s.Type)
+			assert.Equal(t, "stratumn/chainscript/ED25519", s.Type)
 			assert.Len(t, s.PublicKey, 129)
 			assert.Len(t, s.Signature, 136)
 		}

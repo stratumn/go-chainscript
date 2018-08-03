@@ -16,6 +16,7 @@ package chainscript
 
 import (
 	"crypto/sha256"
+	"fmt"
 
 	json "github.com/gibson042/canonicaljson-go"
 	"github.com/jmespath/go-jmespath"
@@ -56,9 +57,14 @@ func (l *Link) Sign(privateKey []byte, payloadPath string) error {
 		return errors.WithStack(err)
 	}
 
+	// We add a known prefix in Signature.Type to be able to figure out if a
+	// signature was generated according to this package's spec.
+	// Clients can add other types of signatures to a link that this package
+	// might not be able to validate (for example signatures on parts of the
+	// link data).
 	s := &Signature{
 		Version:     SignatureVersion,
-		Type:        sig.AI,
+		Type:        fmt.Sprintf("stratumn/chainscript/%s", sig.AI),
 		PayloadPath: payloadPath,
 		PublicKey:   sig.PublicKey,
 		Signature:   sig.Signature,
