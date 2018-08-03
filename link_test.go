@@ -18,6 +18,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 	"github.com/stratumn/go-chainscript/chainscripttest"
 	"github.com/stretchr/testify/assert"
@@ -32,8 +33,31 @@ func TestLink_Data(t *testing.T) {
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 
 		var data string
-		err = l.StructurizeData(data)
+		err = l.StructurizeData(&data)
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+	})
+
+	t.Run("unknown client ID", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/someguy/someapp").Build()
+
+		err := l.SetData("yolo")
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+
+		var data string
+		err = l.StructurizeData(&data)
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+	})
+
+	t.Run("js-chainscript interoperability", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/stratumn/js-chainscript").Build()
+
+		err := l.SetData("yolo")
+		require.NoError(t, err)
+
+		var data string
+		err = l.StructurizeData(&data)
+		require.NoError(t, err)
+		assert.Equal(t, "yolo", data)
 	})
 
 	t.Run("version 1.0.0", func(t *testing.T) {
@@ -67,8 +91,31 @@ func TestLink_Metadata(t *testing.T) {
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
 
 		var metadata string
-		err = l.StructurizeMetadata(metadata)
+		err = l.StructurizeMetadata(&metadata)
 		assert.EqualError(t, err, chainscript.ErrUnknownLinkVersion.Error())
+	})
+
+	t.Run("unknown client ID", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/someguy/someapp").Build()
+
+		err := l.SetMetadata("yolo")
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+
+		var metadata string
+		err = l.StructurizeMetadata(&metadata)
+		assert.EqualError(t, err, chainscript.ErrUnknownClientID.Error())
+	})
+
+	t.Run("js-chainscript interoperability", func(t *testing.T) {
+		l := chainscripttest.NewLinkBuilder(t).WithClientID("github.com/stratumn/js-chainscript").Build()
+
+		err := l.SetMetadata("yolo")
+		require.NoError(t, err)
+
+		var metadata string
+		err = l.StructurizeMetadata(&metadata)
+		require.NoError(t, err)
+		assert.Equal(t, "yolo", metadata)
 	})
 
 	t.Run("version 1.0.0", func(t *testing.T) {
@@ -217,6 +264,22 @@ func TestLink_Validate(t *testing.T) {
 		},
 		chainscript.ErrRefNotFound,
 	}, {
+		"invalid signature",
+		func(*testing.T) *chainscript.Link {
+			l := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").WithInvalidSignature(t).Build()
+			return l
+		},
+		nil,
+		chainscript.ErrInvalidSignature,
+	}, {
+		"valid signatures",
+		func(*testing.T) *chainscript.Link {
+			l := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").WithSignature(t, "").Build()
+			return l
+		},
+		nil,
+		nil,
+	}, {
 		"valid refs",
 		func(*testing.T) *chainscript.Link {
 			l := chainscripttest.NewLinkBuilder(t).Build()
@@ -239,7 +302,7 @@ func TestLink_Validate(t *testing.T) {
 			l := tt.link(t)
 			err := l.Validate(context.Background(), tt.getSegment)
 			if tt.err != nil {
-				assert.EqualError(t, err, tt.err.Error())
+				assert.EqualError(t, errors.Cause(err), tt.err.Error())
 			} else {
 				assert.NoError(t, err)
 			}

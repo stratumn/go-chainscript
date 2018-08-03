@@ -30,3 +30,11 @@ make update_chainscript
 Note that when you update the git subtree, you must not squash your commits
 when merging to the master branch, otherwise the subtree update will fail
 because it will be unable to find the previous subtree commit.
+
+## Updating dependencies
+
+When updating dependencies (go-crypto, canonical-json, etc) we must stay
+backwards-compatible. That means that each dependency update should thoroughly
+check whether it introduces breaking changes in the serialized data.
+If it does, the version of some fields (link, signature) needs to be updated
+accordingly.

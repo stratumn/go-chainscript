@@ -24,7 +24,6 @@ import (
 
 // LinkBuilder allows building links easily in tests.
 type LinkBuilder struct {
-	t    *testing.T
 	Link *chainscript.Link
 }
 
@@ -37,9 +36,9 @@ func NewLinkBuilder(t *testing.T) *LinkBuilder {
 }
 
 // Branch uses the provided link as its parent and copies its mapID and process.
-func (lb *LinkBuilder) Branch(parent *chainscript.Link) *LinkBuilder {
+func (lb *LinkBuilder) Branch(t *testing.T, parent *chainscript.Link) *LinkBuilder {
 	lh, err := parent.Hash()
-	require.NoError(lb.t, err)
+	require.NoError(t, err)
 
 	lb.Link.Meta.PrevLinkHash = lh
 	lb.Link.Meta.MapId = parent.Meta.MapId
@@ -52,10 +51,10 @@ func (lb *LinkBuilder) Branch(parent *chainscript.Link) *LinkBuilder {
 }
 
 // From clones the given link.
-func (lb *LinkBuilder) From(l *chainscript.Link) *LinkBuilder {
+func (lb *LinkBuilder) From(t *testing.T, l *chainscript.Link) *LinkBuilder {
 	var err error
 	lb.Link, err = l.Clone()
-	require.NoError(lb.t, err)
+	require.NoError(t, err)
 
 	return lb
 }
@@ -66,10 +65,16 @@ func (lb *LinkBuilder) WithAction(action string) *LinkBuilder {
 	return lb
 }
 
+// WithClientID sets the link's clientID.
+func (lb *LinkBuilder) WithClientID(clientID string) *LinkBuilder {
+	lb.Link.Meta.ClientId = clientID
+	return lb
+}
+
 // WithData fills the link's data.
-func (lb *LinkBuilder) WithData(data interface{}) *LinkBuilder {
+func (lb *LinkBuilder) WithData(t *testing.T, data interface{}) *LinkBuilder {
 	err := lb.Link.SetData(data)
-	require.NoError(lb.t, err)
+	require.NoError(t, err)
 
 	return lb
 }
@@ -82,6 +87,15 @@ func (lb *LinkBuilder) WithInvalidFields() *LinkBuilder {
 	return lb
 }
 
+// WithInvalidSignature adds an invalid signature to the link.
+func (lb *LinkBuilder) WithInvalidSignature(t *testing.T) *LinkBuilder {
+	err := lb.Link.Sign(RandomPrivateKey(t), "")
+	require.NoError(t, err)
+
+	lb.Link.Signatures[len(lb.Link.Signatures)-1].Signature = []byte("this is not the signature you're looking for")
+	return lb
+}
+
 // WithMapID fills the link's mapID.
 func (lb *LinkBuilder) WithMapID(mapID string) *LinkBuilder {
 	lb.Link.Meta.MapId = mapID
@@ -89,9 +103,9 @@ func (lb *LinkBuilder) WithMapID(mapID string) *LinkBuilder {
 }
 
 // WithMetadata sets the link meta.Data field.
-func (lb *LinkBuilder) WithMetadata(metadata interface{}) *LinkBuilder {
+func (lb *LinkBuilder) WithMetadata(t *testing.T, metadata interface{}) *LinkBuilder {
 	err := lb.Link.SetMetadata(metadata)
-	require.NoError(lb.t, err)
+	require.NoError(t, err)
 
 	return lb
 }
@@ -103,9 +117,9 @@ func (lb *LinkBuilder) WithoutParent() *LinkBuilder {
 }
 
 // WithParent fills the link's prevLinkHash with the given parent's hash.
-func (lb *LinkBuilder) WithParent(link *chainscript.Link) *LinkBuilder {
+func (lb *LinkBuilder) WithParent(t *testing.T, link *chainscript.Link) *LinkBuilder {
 	linkHash, err := link.Hash()
-	require.NoError(lb.t, err)
+	require.NoError(t, err)
 
 	lb.Link.Meta.PrevLinkHash = linkHash
 	return lb
@@ -162,16 +176,34 @@ func (lb *LinkBuilder) WithRandomData() *LinkBuilder {
 }
 
 // WithRef adds a reference to the link.
-func (lb *LinkBuilder) WithRef(link *chainscript.Link) *LinkBuilder {
-	require.NotNil(lb.t, link.Meta.Process)
+func (lb *LinkBuilder) WithRef(t *testing.T, link *chainscript.Link) *LinkBuilder {
+	require.NotNil(t, link.Meta.Process)
 
 	refHash, err := link.Hash()
-	require.NoError(lb.t, err)
+	require.NoError(t, err)
 
 	lb.Link.Meta.Refs = append(lb.Link.Meta.Refs, &chainscript.LinkReference{
 		LinkHash: refHash,
 		Process:  link.Meta.Process.Name,
 	})
+
+	return lb
+}
+
+// WithSignature signs the link with a random key.
+// Provide an empty payload to sign the whole link.
+func (lb *LinkBuilder) WithSignature(t *testing.T, payloadPath string) *LinkBuilder {
+	err := lb.Link.Sign(RandomPrivateKey(t), payloadPath)
+	require.NoError(t, err)
+
+	return lb
+}
+
+// WithSignatureFromKey signs the link with the given key.
+// Provide an empty payload to sign the whole link.
+func (lb *LinkBuilder) WithSignatureFromKey(t *testing.T, key []byte, payloadPath string) *LinkBuilder {
+	err := lb.Link.Sign(key, payloadPath)
+	require.NoError(t, err)
 
 	return lb
 }

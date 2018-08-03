@@ -38,14 +38,41 @@ const (
 var (
 	ErrMissingVersion     = errors.New("version is missing")
 	ErrUnknownLinkVersion = errors.New("unknown link version")
+	ErrUnknownClientID    = errors.New("link was created with a unknown client: can't deserialize it")
 	ErrRefNotFound        = errors.New("referenced link could not be retrieved")
 )
 
 // GetSegmentFunc is the function signature to retrieve a Segment.
 type GetSegmentFunc func(ctx context.Context, linkHash []byte) (*Segment, error)
 
+// compatibleClients contains a list of other libraries that are compatible
+// with this one. Only clients in this list are known to produce binary data
+// that this library can correctly interpret.
+var compatibleClients = map[string]struct{}{
+	ClientID: struct{}{},
+	"github.com/stratumn/js-chainscript": struct{}{},
+}
+
+// compatible returns an error if the link isn't compatible with this package.
+func (l *Link) compatible() error {
+	if l.Meta == nil {
+		return ErrUnknownClientID
+	}
+
+	_, ok := compatibleClients[l.Meta.ClientId]
+	if !ok {
+		return ErrUnknownClientID
+	}
+
+	return nil
+}
+
 // SetData uses the given object as link's custom data.
 func (l *Link) SetData(data interface{}) error {
+	if err := l.compatible(); err != nil {
+		return err
+	}
+
 	switch l.Version {
 	case LinkVersion1_0_0:
 		dataBytes, err := json.Marshal(data)
@@ -64,6 +91,10 @@ func (l *Link) SetData(data interface{}) error {
 // StructurizeData deserializes the link's data into the given object.
 // The provided argument should be a pointer to a struct.
 func (l *Link) StructurizeData(data interface{}) error {
+	if err := l.compatible(); err != nil {
+		return err
+	}
+
 	switch l.Version {
 	case LinkVersion1_0_0:
 		return json.Unmarshal(l.Data, data)
@@ -74,6 +105,10 @@ func (l *Link) StructurizeData(data interface{}) error {
 
 // SetMetadata uses the given object as link's custom metadata.
 func (l *Link) SetMetadata(metadata interface{}) error {
+	if err := l.compatible(); err != nil {
+		return err
+	}
+
 	switch l.Version {
 	case LinkVersion1_0_0:
 		metadataBytes, err := json.Marshal(metadata)
@@ -92,6 +127,10 @@ func (l *Link) SetMetadata(metadata interface{}) error {
 // StructurizeMetadata deserializes the link's metadata into the given object.
 // The provided argument should be a pointer to a struct.
 func (l *Link) StructurizeMetadata(metadata interface{}) error {
+	if err := l.compatible(); err != nil {
+		return err
+	}
+
 	switch l.Version {
 	case LinkVersion1_0_0:
 		return json.Unmarshal(l.Meta.Data, metadata)
@@ -208,6 +247,12 @@ func (l *Link) Validate(ctx context.Context, getSegment GetSegmentFunc) error {
 			if err != nil || seg == nil {
 				return ErrRefNotFound
 			}
+		}
+	}
+
+	for _, sig := range l.Signatures {
+		if err := sig.Validate(l); err != nil {
+			return err
 		}
 	}
 
