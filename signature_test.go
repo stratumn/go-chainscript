@@ -17,6 +17,7 @@ package chainscript_test
 import (
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 	"github.com/stratumn/go-chainscript/chainscripttest"
 	"github.com/stretchr/testify/assert"
@@ -56,7 +57,7 @@ func TestLink_Sign(t *testing.T) {
 		for i, s := range l.Signatures {
 			assert.Equal(t, chainscript.SignatureVersion, s.Version)
 			assert.Equal(t, payloadPaths[i], s.PayloadPath)
-			assert.Equal(t, "stratumn/chainscript/ED25519", s.Type)
+			assert.Equal(t, "ED25519", s.Type)
 			assert.Len(t, s.PublicKey, 129)
 			assert.Len(t, s.Signature, 136)
 		}
@@ -138,5 +139,51 @@ func TestLink_SignedBytes(t *testing.T) {
 
 			assert.NotEqual(t, b1, b2)
 		})
+	})
+}
+
+func TestSignature_Validate(t *testing.T) {
+	t.Run("unknown version", func(t *testing.T) {
+		link := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").Build()
+		s := link.Signatures[0]
+		s.Version = "0.42.0"
+
+		err := s.Validate(link)
+		assert.EqualError(t, err, chainscript.ErrUnknownSignatureVersion.Error())
+	})
+
+	t.Run("invalid payload path", func(t *testing.T) {
+		link := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").Build()
+		s := link.Signatures[0]
+		s.PayloadPath = "not a JMESPATH"
+
+		err := s.Validate(link)
+		assert.Error(t, err)
+	})
+
+	t.Run("invalid public key", func(t *testing.T) {
+		link := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").Build()
+		s := link.Signatures[0]
+		s.PublicKey = []byte("not a public key")
+
+		err := s.Validate(link)
+		assert.EqualError(t, errors.Cause(err), chainscript.ErrInvalidSignature.Error())
+	})
+
+	t.Run("invalid signature", func(t *testing.T) {
+		link := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").Build()
+		s := link.Signatures[0]
+		s.Signature = []byte("not a signature")
+
+		err := s.Validate(link)
+		assert.EqualError(t, errors.Cause(err), chainscript.ErrInvalidSignature.Error())
+	})
+
+	t.Run("valid signature", func(t *testing.T) {
+		link := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").Build()
+		s := link.Signatures[0]
+
+		err := s.Validate(link)
+		require.NoError(t, err)
 	})
 }

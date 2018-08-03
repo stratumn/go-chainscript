@@ -87,6 +87,15 @@ func (lb *LinkBuilder) WithInvalidFields() *LinkBuilder {
 	return lb
 }
 
+// WithInvalidSignature adds an invalid signature to the link.
+func (lb *LinkBuilder) WithInvalidSignature(t *testing.T) *LinkBuilder {
+	err := lb.Link.Sign(RandomPrivateKey(t), "")
+	require.NoError(t, err)
+
+	lb.Link.Signatures[len(lb.Link.Signatures)-1].Signature = []byte("this is not the signature you're looking for")
+	return lb
+}
+
 // WithMapID fills the link's mapID.
 func (lb *LinkBuilder) WithMapID(mapID string) *LinkBuilder {
 	lb.Link.Meta.MapId = mapID

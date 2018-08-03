@@ -250,5 +250,11 @@ func (l *Link) Validate(ctx context.Context, getSegment GetSegmentFunc) error {
 		}
 	}
 
+	for _, sig := range l.Signatures {
+		if err := sig.Validate(l); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

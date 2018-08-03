@@ -18,6 +18,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 	"github.com/stratumn/go-chainscript/chainscripttest"
 	"github.com/stretchr/testify/assert"
@@ -263,6 +264,22 @@ func TestLink_Validate(t *testing.T) {
 		},
 		chainscript.ErrRefNotFound,
 	}, {
+		"invalid signature",
+		func(*testing.T) *chainscript.Link {
+			l := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").WithInvalidSignature(t).Build()
+			return l
+		},
+		nil,
+		chainscript.ErrInvalidSignature,
+	}, {
+		"valid signatures",
+		func(*testing.T) *chainscript.Link {
+			l := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").WithSignature(t, "").Build()
+			return l
+		},
+		nil,
+		nil,
+	}, {
 		"valid refs",
 		func(*testing.T) *chainscript.Link {
 			l := chainscripttest.NewLinkBuilder(t).Build()
@@ -285,7 +302,7 @@ func TestLink_Validate(t *testing.T) {
 			l := tt.link(t)
 			err := l.Validate(context.Background(), tt.getSegment)
 			if tt.err != nil {
-				assert.EqualError(t, err, tt.err.Error())
+				assert.EqualError(t, errors.Cause(err), tt.err.Error())
 			} else {
 				assert.NoError(t, err)
 			}

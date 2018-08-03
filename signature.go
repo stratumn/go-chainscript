@@ -16,7 +16,6 @@ package chainscript
 
 import (
 	"crypto/sha256"
-	"fmt"
 
 	json "github.com/gibson042/canonicaljson-go"
 	"github.com/jmespath/go-jmespath"
@@ -40,6 +39,7 @@ const (
 // Signature errors.
 var (
 	ErrUnknownSignatureVersion = errors.New("unknown signature version")
+	ErrInvalidSignature        = errors.New("signature is invalid")
 )
 
 // Sign configurable parts of the link with the current signature version.
@@ -57,14 +57,9 @@ func (l *Link) Sign(privateKey []byte, payloadPath string) error {
 		return errors.WithStack(err)
 	}
 
-	// We add a known prefix in Signature.Type to be able to figure out if a
-	// signature was generated according to this package's spec.
-	// Clients can add other types of signatures to a link that this package
-	// might not be able to validate (for example signatures on parts of the
-	// link data).
 	s := &Signature{
 		Version:     SignatureVersion,
-		Type:        fmt.Sprintf("stratumn/chainscript/%s", sig.AI),
+		Type:        sig.AI,
 		PayloadPath: payloadPath,
 		PublicKey:   sig.PublicKey,
 		Signature:   sig.Signature,
@@ -98,4 +93,29 @@ func (l *Link) SignedBytes(sigVersion, payloadPath string) ([]byte, error) {
 	default:
 		return nil, ErrUnknownSignatureVersion
 	}
+}
+
+// Validate the signature.
+func (s *Signature) Validate(l *Link) error {
+	signedBytes, err := l.SignedBytes(s.Version, s.PayloadPath)
+	if err != nil {
+		return err
+	}
+
+	if err := l.compatible(); err != nil {
+		return err
+	}
+
+	sig := signatures.Signature{
+		AI:        s.Type,
+		Message:   signedBytes,
+		PublicKey: s.PublicKey,
+		Signature: s.Signature,
+	}
+
+	if err := signatures.Verify(&sig); err != nil {
+		return errors.Wrap(ErrInvalidSignature, err.Error())
+	}
+
+	return nil
 }
