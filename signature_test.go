@@ -114,7 +114,7 @@ func TestLink_SignedBytes(t *testing.T) {
 		t.Run("partial meta", func(t *testing.T) {
 			l := chainscripttest.NewLinkBuilder(t).Build()
 
-			b1, err := l.SignedBytes(v1, "[meta.action,meta.process.name,meta.map_id]")
+			b1, err := l.SignedBytes(v1, "[meta.action,meta.process.name,meta.mapId]")
 			require.NoError(t, err)
 
 			b2, err := l.SignedBytes(v1, "[meta.action,meta.process.name]")
@@ -129,7 +129,7 @@ func TestLink_SignedBytes(t *testing.T) {
 				"random": 63,
 			}).Build()
 
-			path := "[data,meta.process.name,meta.map_id]"
+			path := "[data,meta.process.name,meta.mapId]"
 			b1, err := l1.SignedBytes(v1, path)
 			require.NoError(t, err)
 
