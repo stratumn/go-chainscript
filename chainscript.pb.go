@@ -81,7 +81,7 @@ func (m *Segment) GetMeta() *SegmentMeta {
 // for the link that can be produced after the link is created.
 type SegmentMeta struct {
 	// Hash of the segment's link.
-	LinkHash []byte `protobuf:"bytes,1,opt,name=link_hash,json=linkHash,proto3" json:"link_hash,omitempty"`
+	LinkHash []byte `protobuf:"bytes,1,opt,name=link_hash,json=linkHash,proto3" json:"linkHash,omitempty"`
 	// Evidences produced for the segment's link.
 	Evidences            []*Evidence `protobuf:"bytes,10,rep,name=evidences,proto3" json:"evidences,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
@@ -334,9 +334,9 @@ type LinkMeta struct {
 	// The Client ID should be set by the client code creating the link.
 	// Use a unique ID that easily identifies your library, for example the
 	// github url of your repository.
-	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"clientId,omitempty"`
 	// Hash of the previous link (in the same process).
-	PrevLinkHash []byte `protobuf:"bytes,10,opt,name=prev_link_hash,json=prevLinkHash,proto3" json:"prev_link_hash,omitempty"`
+	PrevLinkHash []byte `protobuf:"bytes,10,opt,name=prev_link_hash,json=prevLinkHash,proto3" json:"prevLinkHash,omitempty"`
 	// Priority of the link.
 	// Can be used to order and filter search results.
 	Priority float64 `protobuf:"fixed64,11,opt,name=priority,proto3" json:"priority,omitempty"`
@@ -346,7 +346,7 @@ type LinkMeta struct {
 	Process *Process `protobuf:"bytes,20,opt,name=process,proto3" json:"process,omitempty"`
 	// A link always belongs to a specific map in that process.
 	// A map is an instance of a process.
-	MapId string `protobuf:"bytes,21,opt,name=map_id,json=mapId,proto3" json:"map_id,omitempty"`
+	MapId string `protobuf:"bytes,21,opt,name=map_id,json=mapId,proto3" json:"mapId,omitempty"`
 	// (Optional) Action in the process that resulted in the link's creation.
 	// Can be used to filter link search results.
 	Action string `protobuf:"bytes,30,opt,name=action,proto3" json:"action,omitempty"`
@@ -461,7 +461,7 @@ func (m *LinkMeta) GetData() []byte {
 // A reference to a link that can be in another process.
 type LinkReference struct {
 	// Hash of the referenced link.
-	LinkHash []byte `protobuf:"bytes,1,opt,name=link_hash,json=linkHash,proto3" json:"link_hash,omitempty"`
+	LinkHash []byte `protobuf:"bytes,1,opt,name=link_hash,json=linkHash,proto3" json:"linkHash,omitempty"`
 	// Process containing the referenced link.
 	Process              string   `protobuf:"bytes,10,opt,name=process,proto3" json:"process,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -519,11 +519,11 @@ type Signature struct {
 	// A description of the parts of the links that are signed.
 	// This should unambiguously let the verifier recompute the signed payload
 	// bytes from the link's content.
-	PayloadPath string `protobuf:"bytes,10,opt,name=payload_path,json=payloadPath,proto3" json:"payload_path,omitempty"`
+	PayloadPath string `protobuf:"bytes,10,opt,name=payload_path,json=payloadPath,proto3" json:"payloadPath,omitempty"`
 	// Encoded signer's public key.
 	// For backwards compatibility, you should update the signature version
 	// or the signature type when changing the encoding used.
-	PublicKey []byte `protobuf:"bytes,20,opt,name=public_key,json=publicKey,proto3" json:"public_key,omitempty"`
+	PublicKey []byte `protobuf:"bytes,20,opt,name=public_key,json=publicKey,proto3" json:"publicKey,omitempty"`
 	// Signature bytes.
 	Signature            []byte   `protobuf:"bytes,21,opt,name=signature,proto3" json:"signature,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
