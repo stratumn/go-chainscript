@@ -106,15 +106,20 @@ func (s *Signature) Validate(l *Link) error {
 		return err
 	}
 
-	sig := signatures.Signature{
-		AI:        s.Type,
-		Message:   signedBytes,
-		PublicKey: s.PublicKey,
-		Signature: s.Signature,
-	}
+	switch s.Version {
+	case SignatureVersion1_0_0:
+		sig := signatures.Signature{
+			AI:        s.Type,
+			Message:   signedBytes,
+			PublicKey: s.PublicKey,
+			Signature: s.Signature,
+		}
 
-	if err := signatures.Verify(&sig); err != nil {
-		return errors.Wrap(ErrInvalidSignature, err.Error())
+		if err := signatures.Verify(&sig); err != nil {
+			return errors.Wrap(ErrInvalidSignature, err.Error())
+		}
+	default:
+		return ErrUnknownSignatureVersion
 	}
 
 	return nil
