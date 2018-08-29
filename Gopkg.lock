@@ -63,7 +63,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3aba9cbc7fe67f84dd354969ab5c6ff18992b5209410a643717939369542d59c"
+  digest = "1:ace6b21419576487bb35928611f66504a9494f2340420996a8935154cd0110dc"
   name = "github.com/stratumn/go-crypto"
   packages = [
     "encoding",
@@ -71,7 +71,7 @@
     "signatures",
   ]
   pruneopts = "UT"
-  revision = "e238d86e5d5a880603e2bfed02c0c9a90df12a6e"
+  revision = "51a04ed715ee95f4c6a9f639e6da8bd4cc4fd470"
 
 [[projects]]
   digest = "1:c40d65817cdd41fac9aa7af8bed56927bb2d6d47e4fea566a74880f5c2b1c41e"
@@ -103,6 +103,7 @@
     "github.com/golang/protobuf/proto",
     "github.com/jmespath/go-jmespath",
     "github.com/pkg/errors",
+    "github.com/stratumn/go-crypto/keys",
     "github.com/stratumn/go-crypto/signatures",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",

@@ -41,12 +41,25 @@ func TestLink_Sign(t *testing.T) {
 		assert.Empty(t, l.Signatures)
 	})
 
+	t.Run("sign whole link if empty payload path", func(t *testing.T) {
+		sk := chainscripttest.RandomPrivateKey(t)
+		l := chainscripttest.NewLinkBuilder(t).Build()
+
+		err := l.Sign(sk, "")
+		require.NoError(t, err)
+
+		assert.Len(t, l.Signatures, 1)
+		sig := l.Signatures[0]
+		assert.Equal(t, "[version,data,meta]", sig.PayloadPath)
+		assert.NoError(t, sig.Validate(l))
+	})
+
 	t.Run("valid signatures", func(t *testing.T) {
 		sk1 := chainscripttest.RandomPrivateKey(t)
 		sk2 := chainscripttest.RandomPrivateKey(t)
 		l := chainscripttest.NewLinkBuilder(t).Build()
 
-		payloadPaths := []string{"", "[data]"}
+		payloadPaths := []string{"[version,data,meta]", "[data]"}
 		err := l.Sign(sk1, payloadPaths[0])
 		require.NoError(t, err)
 
@@ -57,9 +70,9 @@ func TestLink_Sign(t *testing.T) {
 		for i, s := range l.Signatures {
 			assert.Equal(t, chainscript.SignatureVersion, s.Version)
 			assert.Equal(t, payloadPaths[i], s.PayloadPath)
-			assert.Equal(t, "ED25519", s.Type)
 			assert.Len(t, s.PublicKey, 129)
 			assert.Len(t, s.Signature, 136)
+			assert.NoError(t, s.Validate(l))
 		}
 	})
 }

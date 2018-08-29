@@ -47,6 +47,10 @@ var (
 // with the given private key. If no payloadPath is provided, the whole link
 // is signed.
 func (l *Link) Sign(privateKey []byte, payloadPath string) error {
+	if len(payloadPath) == 0 {
+		payloadPath = "[version,data,meta]"
+	}
+
 	payload, err := l.SignedBytes(SignatureVersion, payloadPath)
 	if err != nil {
 		return err
@@ -59,7 +63,6 @@ func (l *Link) Sign(privateKey []byte, payloadPath string) error {
 
 	s := &Signature{
 		Version:     SignatureVersion,
-		Type:        sig.AI,
 		PayloadPath: payloadPath,
 		PublicKey:   sig.PublicKey,
 		Signature:   sig.Signature,
@@ -109,7 +112,6 @@ func (s *Signature) Validate(l *Link) error {
 	switch s.Version {
 	case SignatureVersion1_0_0:
 		sig := signatures.Signature{
-			AI:        s.Type,
 			Message:   signedBytes,
 			PublicKey: s.PublicKey,
 			Signature: s.Signature,
