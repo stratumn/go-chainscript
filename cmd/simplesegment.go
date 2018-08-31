@@ -21,6 +21,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 )
 
@@ -92,7 +93,7 @@ func (t *SimpleSegmentTest) Validate(encoded string) error {
 	}
 
 	if segment.Link.Meta.Action != "init" {
-		return fmt.Errorf("invalid action: %s", segment.Link.Meta.Action)
+		return errors.Errorf("invalid action: %s", segment.Link.Meta.Action)
 	}
 
 	data := CustomData{}
@@ -102,14 +103,14 @@ func (t *SimpleSegmentTest) Validate(encoded string) error {
 	}
 
 	if data.Age != 42 {
-		return fmt.Errorf("invalid data: %s", data.String())
+		return errors.Errorf("invalid data: %s", data.String())
 	}
 	if data.Name != "batman" {
-		return fmt.Errorf("invalid data: %s", data.String())
+		return errors.Errorf("invalid data: %s", data.String())
 	}
 
 	if segment.Link.Meta.MapId != "test_map" {
-		return fmt.Errorf("invalid map id: %s", segment.Link.Meta.MapId)
+		return errors.Errorf("invalid map id: %s", segment.Link.Meta.MapId)
 	}
 
 	metadata := ""
@@ -119,31 +120,31 @@ func (t *SimpleSegmentTest) Validate(encoded string) error {
 	}
 
 	if metadata != "bruce wayne" {
-		return fmt.Errorf("invalid metadata: %s", metadata)
+		return errors.Errorf("invalid metadata: %s", metadata)
 	}
 
 	if !bytes.Equal(segment.Link.PrevLinkHash(), []byte{42, 42}) {
-		return fmt.Errorf("invalid parent: %v", segment.Link.PrevLinkHash())
+		return errors.Errorf("invalid parent: %v", segment.Link.PrevLinkHash())
 	}
 
 	if segment.Link.Meta.Priority != 42 {
-		return fmt.Errorf("invalid priority: %f", segment.Link.Meta.Priority)
+		return errors.Errorf("invalid priority: %f", segment.Link.Meta.Priority)
 	}
 
 	if segment.Link.Meta.Process.Name != "test_process" {
-		return fmt.Errorf("invalid process name: %s", segment.Link.Meta.Process.Name)
+		return errors.Errorf("invalid process name: %s", segment.Link.Meta.Process.Name)
 	}
 
 	if segment.Link.Meta.Process.State != "started" {
-		return fmt.Errorf("invalid process state: %s", segment.Link.Meta.Process.State)
+		return errors.Errorf("invalid process state: %s", segment.Link.Meta.Process.State)
 	}
 
 	if segment.Link.Meta.Step != "setup" {
-		return fmt.Errorf("invalid step: %s", segment.Link.Meta.Step)
+		return errors.Errorf("invalid step: %s", segment.Link.Meta.Step)
 	}
 
 	if segment.Link.Meta.Tags[0] != "tag1" || segment.Link.Meta.Tags[1] != "tag2" {
-		return fmt.Errorf("invalid tags: %v", segment.Link.Meta.Tags)
+		return errors.Errorf("invalid tags: %v", segment.Link.Meta.Tags)
 	}
 
 	return nil

@@ -87,6 +87,8 @@ func validate(path string) {
 		panic(err)
 	}
 
+	failed := false
+
 	for _, t := range testData {
 		tt, ok := TestCases[t.ID]
 		if !ok {
@@ -97,8 +99,13 @@ func validate(path string) {
 		err = tt.Validate(t.Data)
 		if err != nil {
 			fmt.Printf("[%s] FAILED: %s\n", t.ID, err.Error())
+			failed = true
 		} else {
 			fmt.Printf("[%s] SUCCESS\n", t.ID)
 		}
+	}
+
+	if failed {
+		os.Exit(1)
 	}
 }

@@ -18,9 +18,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 )
 
@@ -78,21 +78,21 @@ func (t *ReferencesTest) Validate(encoded string) error {
 	refs := segment.Link.Meta.Refs
 
 	if len(refs) != 2 {
-		return fmt.Errorf("invalid references count: %d", len(refs))
+		return errors.Errorf("invalid references count: %d", len(refs))
 	}
 
 	if refs[0].Process != "p1" {
-		return fmt.Errorf("invalid first reference process: %s", refs[0].Process)
+		return errors.Errorf("invalid first reference process: %s", refs[0].Process)
 	}
 	if !bytes.Equal(refs[0].LinkHash, []byte{42}) {
-		return fmt.Errorf("invalid first reference link hash: %v", refs[0].LinkHash)
+		return errors.Errorf("invalid first reference link hash: %v", refs[0].LinkHash)
 	}
 
 	if refs[1].Process != "p2" {
-		return fmt.Errorf("invalid second reference process: %s", refs[1].Process)
+		return errors.Errorf("invalid second reference process: %s", refs[1].Process)
 	}
 	if !bytes.Equal(refs[1].LinkHash, []byte{24}) {
-		return fmt.Errorf("invalid second reference link hash: %v", refs[1].LinkHash)
+		return errors.Errorf("invalid second reference link hash: %v", refs[1].LinkHash)
 	}
 
 	return nil

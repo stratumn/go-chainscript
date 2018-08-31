@@ -18,9 +18,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 )
 
@@ -92,23 +92,23 @@ func (t *EvidencesTest) Validate(encoded string) error {
 	}
 
 	if len(segment.Meta.Evidences) != 2 {
-		return fmt.Errorf("invalid evidences count: %d", len(segment.Meta.Evidences))
+		return errors.Errorf("invalid evidences count: %d", len(segment.Meta.Evidences))
 	}
 
 	btc := segment.GetEvidence("bitcoin", "testnet")
 	if btc == nil {
-		return fmt.Errorf("missing bitcoin evidence")
+		return errors.Errorf("missing bitcoin evidence")
 	}
 	if btc.Version != "0.1.0" || btc.Backend != "bitcoin" || btc.Provider != "testnet" || !bytes.Equal(btc.Proof, []byte{42}) {
-		return fmt.Errorf("invalid bitcoin evidence: %v", btc)
+		return errors.Errorf("invalid bitcoin evidence: %v", btc)
 	}
 
 	eth := segment.GetEvidence("ethereum", "mainnet")
 	if eth == nil {
-		return fmt.Errorf("missing ethereum evidence")
+		return errors.Errorf("missing ethereum evidence")
 	}
 	if eth.Version != "1.0.3" || eth.Backend != "ethereum" || eth.Provider != "mainnet" || !bytes.Equal(eth.Proof, []byte{24}) {
-		return fmt.Errorf("invalid ethereum evidence: %v", eth)
+		return errors.Errorf("invalid ethereum evidence: %v", eth)
 	}
 
 	return nil

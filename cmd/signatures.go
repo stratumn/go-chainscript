@@ -17,9 +17,9 @@ package main
 import (
 	"context"
 	"encoding/base64"
-	"fmt"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 	"github.com/stratumn/go-crypto/keys"
 )
@@ -102,7 +102,7 @@ func (t *SignaturesTest) Validate(encoded string) error {
 	}
 
 	if len(segment.Link.Signatures) != 2 {
-		return fmt.Errorf("invalid number of signatures: %d", len(segment.Link.Signatures))
+		return errors.Errorf("invalid number of signatures: %d", len(segment.Link.Signatures))
 	}
 
 	err = segment.Link.Signatures[0].Validate(segment.Link)
@@ -116,11 +116,11 @@ func (t *SignaturesTest) Validate(encoded string) error {
 	}
 
 	if segment.Link.Signatures[0].PayloadPath != "[version,data,meta]" {
-		return fmt.Errorf("invalid first signature payload path: %s", segment.Link.Signatures[0].PayloadPath)
+		return errors.Errorf("invalid first signature payload path: %s", segment.Link.Signatures[0].PayloadPath)
 	}
 
 	if segment.Link.Signatures[1].PayloadPath != "[version,meta.mapId]" {
-		return fmt.Errorf("invalid second signature payload path: %s", segment.Link.Signatures[1].PayloadPath)
+		return errors.Errorf("invalid second signature payload path: %s", segment.Link.Signatures[1].PayloadPath)
 	}
 
 	return nil
