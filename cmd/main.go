@@ -32,7 +32,8 @@ import (
 var (
 	// TestCases included in the compatibility test suite.
 	TestCases = map[string]TestCase{
-		"simple-segment": NewSimpleSegmentTest(),
+		"simple-segment":     NewSimpleSegmentTest(),
+		"segment-references": NewReferencesTest(),
 	}
 )
 
