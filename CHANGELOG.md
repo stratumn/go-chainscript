@@ -8,7 +8,7 @@ choices. Those choices are detailed in this document.
 - Dependencies:
   - [Canonical JSON](https://github.com/gibson042/canonicaljson-go) v1.0.3 (81f5327eb8367be6f106cd62f136b6f25b4c1678)
   - [Protobuf](https://github.com/golang/protobuf) v1.1.0 (b4deda0973fb4c70b50d226b1af49f3da59f5265)
-  - [Crypto](https://github.com/stratumn/go-crypto) v1.0.0
+  - [Crypto](https://github.com/stratumn/go-crypto) v0.1.0
 - Data bytes (e.g. _link.data_, _link.meta.data_) are encoded from Go objects
   using canonical JSON
 - Link hash is calculated by hashing the protobuf-encoded link bytes with
