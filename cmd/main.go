@@ -35,6 +35,7 @@ var (
 		"simple-segment":     NewSimpleSegmentTest(),
 		"segment-references": NewReferencesTest(),
 		"segment-evidences":  NewEvidencesTest(),
+		"segment-signatures": NewSignaturesTest(),
 	}
 )
 
