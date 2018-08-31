@@ -31,7 +31,9 @@ import (
 
 var (
 	// TestCases included in the compatibility test suite.
-	TestCases = map[string]TestCase{}
+	TestCases = map[string]TestCase{
+		"simple-segment": NewSimpleSegmentTest(),
+	}
 )
 
 func main() {
@@ -77,7 +79,7 @@ func validate(path string) {
 	}
 
 	var testData []TestData
-	err = json.Unmarshal(b, testData)
+	err = json.Unmarshal(b, &testData)
 	if err != nil {
 		panic(err)
 	}
