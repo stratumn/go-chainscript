@@ -12,8 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package chainscript contains the reference Go ChainScript implementation.
-//
-// It provides helpers to manipulate ChainScript data structures conveniently
-// and efficiently.
-package chainscript
+package main
+
+// TestCase to run accross ChainScript implementations.
+type TestCase interface {
+	// Generate encoded segment bytes.
+	Generate() string
+	// Validate encoded segment bytes.
+	Validate(string) error
+}
+
+// TestData associated to a given test.
+type TestData struct {
+	ID   string `json:"id"`
+	Data string `json:"data"`
+}

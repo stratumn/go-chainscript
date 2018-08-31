@@ -9,8 +9,11 @@ GO_LINT=$(GO_LINT_CMD) run --build-tags="lint" --deadline=4m --disable="ineffass
 # Test parameters
 COVERAGE_FILE=coverage.txt
 
+# Test data
+TESTDATA_FILE=./samples/go-samples.json
+
 # == .PHONY ===================================================================
-.PHONY: dep golangcilint deps build lint test coverage protobuf update_chainscript
+.PHONY: dep golangcilint deps build lint test coverage protobuf update_chainscript testdata_generate testdata_validate
 
 # == all ======================================================================
 all: build
@@ -52,3 +55,11 @@ protobuf: $(PROTOS_GO)
 # == update_chainscript =======================================================
 update_chainscript:
 	git subtree pull --prefix proto git@github.com:stratumn/chainscript.git master --squash
+
+# == testdata_generate ========================================================
+testdata_generate:
+	go run cmd/*.go generate $(TESTDATA_FILE)
+
+# == testdata_validate ========================================================
+testdata_validate:
+	go run cmd/*.go validate $(TESTDATA_FILE)

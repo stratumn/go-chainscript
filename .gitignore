@@ -14,3 +14,6 @@ coverage.txt
 
 # Vendor directories
 vendor
+
+# Generated samples
+samples
