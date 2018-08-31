@@ -34,6 +34,7 @@ var (
 	TestCases = map[string]TestCase{
 		"simple-segment":     NewSimpleSegmentTest(),
 		"segment-references": NewReferencesTest(),
+		"segment-evidences":  NewEvidencesTest(),
 	}
 )
 
