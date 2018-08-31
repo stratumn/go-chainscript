@@ -62,7 +62,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:ace6b21419576487bb35928611f66504a9494f2340420996a8935154cd0110dc"
   name = "github.com/stratumn/go-crypto"
   packages = [
@@ -72,6 +71,7 @@
   ]
   pruneopts = "UT"
   revision = "51a04ed715ee95f4c6a9f639e6da8bd4cc4fd470"
+  version = "v0.1.0"
 
 [[projects]]
   digest = "1:c40d65817cdd41fac9aa7af8bed56927bb2d6d47e4fea566a74880f5c2b1c41e"
