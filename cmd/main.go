@@ -101,6 +101,7 @@ func validate(path string) {
 		tt, ok := TestCases[t.ID]
 		if !ok {
 			fmt.Printf("Unkown test case: %s\n", t.ID)
+			failed = true
 			continue
 		}
 
