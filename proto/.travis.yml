@@ -9,3 +9,4 @@ install:
   - go get -u github.com/golang/protobuf/protoc-gen-go
 script:
   - protoc --go_out=. chainscript.proto
+  - ./test.sh

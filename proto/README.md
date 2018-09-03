@@ -33,10 +33,31 @@ pull the latest changes with `git subtree`.
 Stratumn provides opinionated reference implementations that should suit most
 projects:
 
-| Language   | Repository                                 | Status      |
-| ---------- | ------------------------------------------ | ----------- |
-| Golang     | https://github.com/stratumn/go-chainscript | Development |
-| Javascript | https://github.com/stratumn/js-chainscript | Development |
+| Language   | Repository                                 | Status |
+| ---------- | ------------------------------------------ | ------ |
+| Golang     | https://github.com/stratumn/go-chainscript | 1.0.0  |
+| Javascript | https://github.com/stratumn/js-chainscript | 1.0.0  |
+
+## Testing
+
+For implementations to be compatible, we use a common set of test cases that
+every implementation needs to pass.
+
+### Regression samples
+
+In the `samples` folder we provide serialized segments. ChainScript
+implementations should unit test that they're able to correctly deserialize and
+validate these segments.
+
+See the [test samples](samples/README.md) for more details.
+
+### Nightly tests
+
+The `./test.sh` script is run nightly and verifies that known implementations
+remain compatible with each other.
+
+Every implementation needs to provide a docker image that allows generating and
+validating test segments.
 
 ## Design Choices
 
