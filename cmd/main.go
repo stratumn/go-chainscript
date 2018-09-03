@@ -40,6 +40,10 @@ var (
 )
 
 func main() {
+	if len(os.Args) < 3 {
+		panic("Some arguments are missing. Please provide the action requested and the file path.")
+	}
+
 	action := os.Args[1]
 	path := os.Args[2]
 
@@ -68,14 +72,18 @@ func generate(path string) {
 		panic(err)
 	}
 
+	fmt.Printf("Saving encoded segments to %s...\n", path)
 	err = ioutil.WriteFile(path, b, os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("Saved.")
 }
 
 // validate encoded test segments from the specified path.
 func validate(path string) {
+	fmt.Printf("Loading encoded segments from %s...\n", path)
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		panic(err)
