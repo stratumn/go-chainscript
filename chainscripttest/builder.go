@@ -236,3 +236,11 @@ func (lb *LinkBuilder) WithVersion(version string) *LinkBuilder {
 func (lb *LinkBuilder) Build() *chainscript.Link {
 	return lb.Link
 }
+
+// Segmentify builds the link and then segmentifies it.
+func (lb *LinkBuilder) Segmentify(t *testing.T) *chainscript.Segment {
+	s, err := lb.Build().Segmentify()
+	require.NoError(t, err)
+
+	return s
+}
