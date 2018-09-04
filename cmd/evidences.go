@@ -19,7 +19,6 @@ import (
 	"context"
 	"encoding/base64"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/pkg/errors"
 	"github.com/stratumn/go-chainscript"
 )
@@ -65,7 +64,7 @@ func (t *EvidencesTest) Generate() string {
 		panic(err)
 	}
 
-	b, err := proto.Marshal(segment)
+	b, err := chainscript.MarshalSegment(segment)
 	if err != nil {
 		panic(err)
 	}
@@ -80,8 +79,7 @@ func (t *EvidencesTest) Validate(encoded string) error {
 		return err
 	}
 
-	var segment chainscript.Segment
-	err = proto.Unmarshal(b, &segment)
+	segment, err := chainscript.UnmarshalSegment(b)
 	if err != nil {
 		return err
 	}
