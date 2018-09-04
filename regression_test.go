@@ -23,7 +23,6 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/stratumn/go-chainscript"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -48,14 +47,13 @@ func TestRegression(t *testing.T) {
 			data, err := base64.StdEncoding.DecodeString(td.Data)
 			require.NoError(t, err)
 
-			var segment chainscript.Segment
-			err = proto.Unmarshal(data, &segment)
+			segment, err := chainscript.UnmarshalSegment(data)
 			require.NoError(t, err)
 
 			err = segment.Validate(context.Background(), nil)
 			require.NoError(t, err)
 
-			testSegments[td.ID] = &segment
+			testSegments[td.ID] = segment
 		}
 
 		t.Run("simple-segment", func(t *testing.T) {

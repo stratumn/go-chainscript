@@ -19,7 +19,6 @@ import (
 	"testing"
 
 	json "github.com/gibson042/canonicaljson-go"
-	"github.com/golang/protobuf/proto"
 	"github.com/stratumn/go-chainscript"
 	"github.com/stratumn/go-chainscript/chainscripttest"
 	"github.com/stretchr/testify/require"
@@ -69,17 +68,16 @@ func TestMarshal(t *testing.T) {
 	require.NoError(t, segment.Validate(context.Background(), nil))
 
 	t.Run("proto", func(t *testing.T) {
-		protoBytes, err := proto.Marshal(segment)
+		protoBytes, err := chainscript.MarshalSegment(segment)
 		require.NoError(t, err)
 
-		var unmarshalled chainscript.Segment
-		err = proto.Unmarshal(protoBytes, &unmarshalled)
+		unmarshalled, err := chainscript.UnmarshalSegment(protoBytes)
 		require.NoError(t, err)
 
 		err = unmarshalled.Validate(context.Background(), nil)
 		require.NoError(t, err)
 
-		chainscripttest.SegmentsEqual(t, segment, &unmarshalled)
+		chainscripttest.SegmentsEqual(t, segment, unmarshalled)
 	})
 
 	t.Run("json", func(t *testing.T) {
