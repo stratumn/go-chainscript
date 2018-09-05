@@ -33,7 +33,7 @@ func RandomBytes(n int) []byte {
 }
 
 // RandomHash creates a random hash.
-func RandomHash() []byte {
+func RandomHash() chainscript.LinkHash {
 	return RandomBytes(32)
 }
 
