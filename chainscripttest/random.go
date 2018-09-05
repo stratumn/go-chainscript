@@ -18,6 +18,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/stratumn/go-chainscript"
 	"github.com/stratumn/go-crypto/keys"
 	"github.com/stretchr/testify/require"
 )
@@ -54,4 +55,24 @@ func RandomPrivateKey(t *testing.T) []byte {
 	require.NoError(t, err)
 
 	return keyBytes
+}
+
+// RandomLink creates a link with random data.
+func RandomLink(t *testing.T) *chainscript.Link {
+	return NewLinkBuilder(t).WithRandomData().Build()
+}
+
+// RandomSegment creates a segment with random data.
+func RandomSegment(t *testing.T) *chainscript.Segment {
+	return NewLinkBuilder(t).WithRandomData().Segmentify(t)
+}
+
+// RandomEvidence creates a random evidence.
+func RandomEvidence(t *testing.T) *chainscript.Evidence {
+	return &chainscript.Evidence{
+		Version:  "1.0.0",
+		Backend:  RandomString(6),
+		Provider: RandomString(10),
+		Proof:    RandomBytes(64),
+	}
 }
