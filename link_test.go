@@ -162,9 +162,12 @@ func TestLink_Hash(t *testing.T) {
 
 func TestLink_HashString(t *testing.T) {
 	l := chainscripttest.NewLinkBuilder(t).Build()
-	h, err := l.HashString()
+	h, err := l.Hash()
 	require.NoError(t, err)
 	assert.NotEmpty(t, h)
+
+	hs := h.String()
+	assert.NotEmpty(t, hs)
 }
 
 func TestLink_PrevLinkHash(t *testing.T) {
@@ -206,7 +209,7 @@ func TestLink_Segmentify(t *testing.T) {
 	s, err := l.Segmentify()
 	require.NoError(t, err)
 	assert.Equal(t, l, s.Link)
-	assert.Equal(t, lh, s.Meta.LinkHash)
+	assert.Equal(t, []byte(lh), s.Meta.LinkHash)
 }
 
 func TestLink_Validate(t *testing.T) {
@@ -259,7 +262,7 @@ func TestLink_Validate(t *testing.T) {
 			}
 			return l
 		},
-		func(context.Context, []byte) (*chainscript.Segment, error) {
+		func(context.Context, chainscript.LinkHash) (*chainscript.Segment, error) {
 			return nil, nil
 		},
 		chainscript.ErrRefNotFound,
@@ -289,7 +292,7 @@ func TestLink_Validate(t *testing.T) {
 			}
 			return l
 		},
-		func(context.Context, []byte) (*chainscript.Segment, error) {
+		func(context.Context, chainscript.LinkHash) (*chainscript.Segment, error) {
 			l := chainscripttest.NewLinkBuilder(t).Build()
 			s, _ := l.Segmentify()
 			return s, nil

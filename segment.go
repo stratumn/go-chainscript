@@ -17,7 +17,6 @@ package chainscript
 import (
 	"bytes"
 	"context"
-	"encoding/hex"
 
 	"github.com/pkg/errors"
 )
@@ -32,13 +31,8 @@ var (
 )
 
 // LinkHash returns the link hash.
-func (s *Segment) LinkHash() []byte {
+func (s *Segment) LinkHash() LinkHash {
 	return s.Meta.LinkHash
-}
-
-// LinkHashString returns the hex-encoded link hash.
-func (s *Segment) LinkHashString() string {
-	return hex.EncodeToString(s.Meta.LinkHash)
 }
 
 // SetLinkHash computes and sets the link hash.

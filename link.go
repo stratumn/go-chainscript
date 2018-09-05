@@ -17,7 +17,6 @@ package chainscript
 import (
 	"context"
 	"crypto/sha256"
-	"encoding/hex"
 
 	json "github.com/gibson042/canonicaljson-go"
 	"github.com/golang/protobuf/proto"
@@ -43,7 +42,7 @@ var (
 )
 
 // GetSegmentFunc is the function signature to retrieve a Segment.
-type GetSegmentFunc func(ctx context.Context, linkHash []byte) (*Segment, error)
+type GetSegmentFunc func(ctx context.Context, linkHash LinkHash) (*Segment, error)
 
 // compatibleClients contains a list of other libraries that are compatible
 // with this one. Only clients in this list are known to produce binary data
@@ -141,7 +140,7 @@ func (l *Link) StructurizeMetadata(metadata interface{}) error {
 
 // Hash serializes the link and computes a hash of the resulting bytes.
 // The serialization and hashing algorithm used depend on the link version.
-func (l *Link) Hash() ([]byte, error) {
+func (l *Link) Hash() (LinkHash, error) {
 	switch l.Version {
 	case LinkVersion1_0_0:
 		b, err := proto.Marshal(l)
@@ -156,19 +155,9 @@ func (l *Link) Hash() ([]byte, error) {
 	}
 }
 
-// HashString returns the hex-encoded link hash.
-func (l *Link) HashString() (string, error) {
-	lh, err := l.Hash()
-	if err != nil {
-		return "", err
-	}
-
-	return hex.EncodeToString(lh), nil
-}
-
 // PrevLinkHash returns the link's parent hash.
 // If the link doesn't have a parent, it returns nil.
-func (l *Link) PrevLinkHash() []byte {
+func (l *Link) PrevLinkHash() LinkHash {
 	if l.Meta == nil {
 		return nil
 	}

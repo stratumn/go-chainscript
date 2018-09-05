@@ -31,12 +31,12 @@ func TestSegment_LinkHash(t *testing.T) {
 	err := s.SetLinkHash()
 	require.NoError(t, err)
 
-	lh := s.LinkHashString()
+	lh := s.LinkHash().String()
 	assert.NotEmpty(t, lh)
 
 	err = s.SetLinkHash()
 	require.NoError(t, err)
-	lhh := s.LinkHashString()
+	lhh := s.LinkHash().String()
 	assert.Equal(t, lh, lhh)
 }
 

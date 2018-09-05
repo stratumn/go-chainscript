@@ -15,8 +15,6 @@
 package chainscript
 
 import (
-	"encoding/hex"
-
 	"github.com/pkg/errors"
 )
 
@@ -96,7 +94,7 @@ func (b *LinkBuilder) WithMetadata(data interface{}) *LinkBuilder {
 }
 
 // WithParent sets the link's parent, referenced by its hash.
-func (b *LinkBuilder) WithParent(linkHash []byte) *LinkBuilder {
+func (b *LinkBuilder) WithParent(linkHash LinkHash) *LinkBuilder {
 	if len(linkHash) == 0 {
 		b.err = ErrMissingLinkHash
 		return b
@@ -142,13 +140,13 @@ func (b *LinkBuilder) WithRefs(refs ...*LinkReference) *LinkBuilder {
 			return b
 		}
 
-		hexLinkHash := hex.EncodeToString(ref.LinkHash)
-		if _, ok := b.refs[hexLinkHash]; ok {
+		linkHashStr := LinkHash(ref.LinkHash).String()
+		if _, ok := b.refs[linkHashStr]; ok {
 			continue
 		}
 
 		b.link.Meta.Refs = append(b.link.Meta.Refs, ref)
-		b.refs[hexLinkHash] = struct{}{}
+		b.refs[linkHashStr] = struct{}{}
 	}
 
 	return b
