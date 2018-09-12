@@ -50,3 +50,19 @@ func UnmarshalLink(b []byte) (*Link, error) {
 
 	return &unmarshalled, nil
 }
+
+// MarshalEvidence marshals using protobuf.
+func MarshalEvidence(e *Evidence) ([]byte, error) {
+	return proto.Marshal(e)
+}
+
+// UnmarshalEvidence unmarshals protobuf bytes.
+func UnmarshalEvidence(b []byte) (*Evidence, error) {
+	var unmarshalled Evidence
+	err := proto.Unmarshal(b, &unmarshalled)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	return &unmarshalled, nil
+}
