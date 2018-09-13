@@ -79,7 +79,7 @@ func TestRegression(t *testing.T) {
 			linkData := CustomData{}
 			err = s.Link.StructurizeData(&linkData)
 			require.NoError(t, err)
-			assert.Equal(t, "batman", linkData.Name)
+			assert.Equal(t, "ʙᴀᴛᴍᴀɴ", linkData.Name)
 			assert.Equal(t, 42, linkData.Age)
 
 			linkMetadata := ""
