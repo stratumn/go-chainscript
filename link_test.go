@@ -65,7 +65,7 @@ func TestLink_Data(t *testing.T) {
 		require.Nil(t, l.Data)
 
 		data := map[string]interface{}{
-			"user": "spongebob",
+			"user": "ʙᴀᴛᴍᴀɴ",
 			"id":   123,
 		}
 		err := l.SetData(data)
@@ -76,7 +76,7 @@ func TestLink_Data(t *testing.T) {
 		err = l.StructurizeData(&data2)
 		require.NoError(t, err)
 		assert.Len(t, data2, 2)
-		assert.Equal(t, "spongebob", data2["user"])
+		assert.Equal(t, "ʙᴀᴛᴍᴀɴ", data2["user"])
 		// In version 1.0.0 we use JSON marshalling which only uses float64 for
 		// numeric values. So we need an explicit convertion to get an int.
 		assert.Equal(t, 123, int(data2["id"].(float64)))
