@@ -19,7 +19,7 @@ should be tested that the values can be correctly extracted.
   "link": {
     "version": "1.0.0",
     "data": {
-      "name": "batman",
+      "name": "ʙᴀᴛᴍᴀɴ",
       "age": 42
     },
     "meta": {

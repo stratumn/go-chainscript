@@ -48,7 +48,7 @@ func (c *CustomData) String() string {
 func (t *SimpleSegmentTest) Generate() string {
 	link, err := chainscript.NewLinkBuilder("test_process", "test_map").
 		WithAction("init").
-		WithData(CustomData{Name: "batman", Age: 42}).
+		WithData(CustomData{Name: "ʙᴀᴛᴍᴀɴ", Age: 42}).
 		WithMetadata("bruce wayne").
 		WithParent([]byte{42, 42}).
 		WithPriority(42).
@@ -103,7 +103,7 @@ func (t *SimpleSegmentTest) Validate(encoded string) error {
 	if data.Age != 42 {
 		return errors.Errorf("invalid data: %s", data.String())
 	}
-	if data.Name != "batman" {
+	if data.Name != "ʙᴀᴛᴍᴀɴ" {
 		return errors.Errorf("invalid data: %s", data.String())
 	}
 
