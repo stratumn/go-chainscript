@@ -1,0 +1,167 @@
+// Copyright 2017-2018 Stratumn SAS. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+// ChainScript is an open standard for representing Proof of Process data.
+// Proof of Process is a protocol that allows partners to follow the execution
+// of a shared process.
+// Proof of Process provides immutability and auditability of every step in the
+// process.
+package stratumn.chainscript;
+
+option go_package = "chainscript";
+
+// A segment describes an atomic step in your process.
+message Segment {
+    // The link is the immutable part of a segment.
+    // It contains the details of the step.
+    Link link = 1;
+    // The link can be enriched with potentially mutable metadata.
+    SegmentMeta meta = 2;
+}
+
+// Segment metadata. This is the potentially mutable part of a segment.
+// It contains some invariants (hash of the immutable link) and evidences
+// for the link that can be produced after the link is created.
+message SegmentMeta {
+    // Hash of the segment's link.
+    bytes link_hash = 1;
+
+    // Evidences produced for the segment's link.
+    repeated Evidence evidences = 10;
+}
+
+// Evidences can be used to externally verify a link's existence at a given 
+// moment in time.
+// An evidence can be a proof of inclusion in a public blockchain, a timestamp
+// signed by a trusted authority or anything that you trust to provide an 
+// immutable ordering of your process' steps.
+message Evidence {
+    // Version of the evidence format.
+    string version = 1;
+
+    // Identifier of the evidence type.
+    // For example, in the case of a timestamp on the Bitcoin blockchain,
+    // this would be "bitcoin".
+    string backend = 10;
+    // Instance of the backend used.
+    // For example, in the case of a timestamp on the Bitcoin blockchain,
+    // this would be the chain ID (to identify testnet from mainnet).
+    string provider = 11;
+
+    // Data that should be usable offline by any client wishing to validate
+    // the evidence.
+    // For backwards compatibility, you should update the evidence version 
+    // when the structure of this proof changes.
+    bytes proof = 20;
+}
+
+// A link is the immutable part of a segment.
+// A link contains all the data that represents a process' step.
+message Link {
+    // Version of the link format.
+    // You can for example use the git tag of the code used to create the link.
+    string version = 1;
+
+    // Data representing the process' step details.
+    // For backwards compatibility, you should update the link version
+    // in meta when the structure/encoding of this field changes.
+    bytes data = 10;
+    // Metadata associated to the process' step.
+    // Some of this metadata is used to provide filtering options when
+    // fetching links.
+    LinkMeta meta = 11;
+
+    // (Optional) Signatures of configurable parts of the link.
+    repeated Signature signatures = 20;
+}
+
+// A process represents a real-world process that is shared between multiple
+// independent actors.
+message Process {
+    // The name of the process.
+    string name = 1;
+
+    // The current state of the process.
+    string state = 10;
+}
+
+// Metadata associated to a process' step.
+// Once included in a segment, this is immutable.
+message LinkMeta {
+    // The Client ID should be set by the client code creating the link.
+    // Use a unique ID that easily identifies your library, for example the
+    // github url of your repository.
+    string client_id = 1;
+
+    // Hash of the previous link (in the same process).
+    bytes prev_link_hash = 10;
+    // Priority of the link.
+    // Can be used to order and filter search results.
+    double priority = 11;
+    // References to related links (potentially in other processes).
+    repeated LinkReference refs = 12;
+
+    // A link is a step in a given process.
+    Process process = 20;
+    // A link always belongs to a specific map in that process.
+    // A map is an instance of a process.
+    string map_id = 21;
+
+    // (Optional) Action in the process that resulted in the link's creation.
+    // Can be used to filter link search results.
+    string action = 30;
+    // (Optional) Step of the process that results from the action.
+    // Can be used to help deserialize link data or filter link search results.
+    string step = 31;
+    // (Optional) Tags that can be used to filter link search results.
+    repeated string tags = 32;
+
+    // (Optional) Additional metadata needed by your business logic.
+    // For backwards compatibility, you should update the link version when the
+    // structure of this field changes.
+    bytes data = 100;
+}
+
+// A reference to a link that can be in another process.
+message LinkReference {
+    // Hash of the referenced link.
+    bytes link_hash = 1;
+    // Process containing the referenced link.
+    string process = 10;
+}
+
+// A signature of configurable parts of a link.
+// Different signature types and versions are allowed to sign different 
+// encodings of the data, but we recommend signing a hash of the 
+// protobuf-encoded bytes.
+message Signature {
+    // Version of the signature format.
+    string version = 1;
+    // Signature algorithm used (for example, "EdDSA").
+    string type = 2;
+
+    // A description of the parts of the links that are signed.
+    // This should unambiguously let the verifier recompute the signed payload
+    // bytes from the link's content.
+    string payload_path = 10;
+
+    // Encoded signer's public key.
+    // For backwards compatibility, you should update the signature version
+    // or the signature type when changing the encoding used.
+    bytes public_key = 20;
+    // Signature bytes.
+    bytes signature = 21;
+}
