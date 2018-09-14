@@ -53,8 +53,18 @@ protobuf: $(PROTOS_GO)
 	protoc --go_out=. -Iproto $<
 
 # == update_chainscript =======================================================
+update_chainscript: SHELL:=/bin/bash
 update_chainscript:
-	git subtree pull --prefix proto git@github.com:stratumn/chainscript.git master --squash
+	@if [[ -n $$(git diff --stat) ]]; then \
+		echo "Chainscript cannot be updated: you have unstaged changes in your working tree. Please commit or stash your current work and retry."; \
+	elif [[ -n $$(git status -s) ]]; then \
+		echo "Chainscript cannot be updated: you have staged changes. Please commit or stash your current work and retry."; \
+	else \
+		rm -r ./proto; \
+		git add ./proto; \
+		git commit -m "removing old chainscript subtree"; \
+		git subtree add --prefix proto git@github.com:stratumn/chainscript.git master --squash; \
+	fi
 
 # == docker ===================================================================
 docker:
