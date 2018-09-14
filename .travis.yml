@@ -8,5 +8,6 @@ script:
   - make build
   - make lint
   - make coverage
+  - make docker
 after_success:
   - bash <(curl -s https://codecov.io/bash)

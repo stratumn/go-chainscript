@@ -10,12 +10,12 @@ RUN apk add git
 
 RUN mkdir /samples
 
-WORKDIR /go/src/chainscript
+WORKDIR /go/src/github.com/stratumn/go-chainscript
 ADD . .
 
 RUN make deps
 
-WORKDIR /go/src/chainscript/cmd
+WORKDIR /go/src/github.com/stratumn/go-chainscript/cmd
 RUN go build -o chainscript-cli
 RUN mv chainscript-cli /go/bin
 

@@ -13,7 +13,7 @@ COVERAGE_FILE=coverage.txt
 TESTDATA_FILE=./samples/go-samples.json
 
 # == .PHONY ===================================================================
-.PHONY: dep golangcilint deps build lint test coverage protobuf update_chainscript testdata_generate testdata_validate
+.PHONY: dep golangcilint deps build lint test coverage protobuf update_chainscript docker testdata_generate testdata_validate
 
 # == all ======================================================================
 all: build
@@ -55,6 +55,10 @@ protobuf: $(PROTOS_GO)
 # == update_chainscript =======================================================
 update_chainscript:
 	git subtree pull --prefix proto git@github.com:stratumn/chainscript.git master --squash
+
+# == docker ===================================================================
+docker:
+	docker build -t stratumn/go-chainscript:latest .
 
 # == testdata_generate ========================================================
 testdata_generate:
