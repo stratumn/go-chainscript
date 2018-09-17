@@ -214,17 +214,15 @@ func TestLink_Segmentify(t *testing.T) {
 
 func TestLink_Validate(t *testing.T) {
 	testCases := []struct {
-		name       string
-		link       func(*testing.T) *chainscript.Link
-		getSegment chainscript.GetSegmentFunc
-		err        error
+		name string
+		link func(*testing.T) *chainscript.Link
+		err  error
 	}{{
 		"missing version",
 		func(*testing.T) *chainscript.Link {
 			l := chainscripttest.NewLinkBuilder(t).WithVersion("").Build()
 			return l
 		},
-		nil,
 		chainscript.ErrMissingVersion,
 	}, {
 		"missing process",
@@ -232,7 +230,6 @@ func TestLink_Validate(t *testing.T) {
 			l := chainscripttest.NewLinkBuilder(t).WithProcess("").Build()
 			return l
 		},
-		nil,
 		chainscript.ErrMissingProcess,
 	}, {
 		"missing map ID",
@@ -240,7 +237,6 @@ func TestLink_Validate(t *testing.T) {
 			l := chainscripttest.NewLinkBuilder(t).WithMapID("").Build()
 			return l
 		},
-		nil,
 		chainscript.ErrMissingMapID,
 	}, {
 		"invalid ref",
@@ -251,28 +247,13 @@ func TestLink_Validate(t *testing.T) {
 			}
 			return l
 		},
-		nil,
 		chainscript.ErrMissingLinkHash,
-	}, {
-		"missing ref",
-		func(*testing.T) *chainscript.Link {
-			l := chainscripttest.NewLinkBuilder(t).Build()
-			l.Meta.Refs = []*chainscript.LinkReference{
-				&chainscript.LinkReference{Process: l.Meta.Process.Name, LinkHash: make([]byte, 32)},
-			}
-			return l
-		},
-		func(context.Context, chainscript.LinkHash) (*chainscript.Segment, error) {
-			return nil, nil
-		},
-		chainscript.ErrRefNotFound,
 	}, {
 		"invalid signature",
 		func(*testing.T) *chainscript.Link {
 			l := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").WithInvalidSignature(t).Build()
 			return l
 		},
-		nil,
 		chainscript.ErrInvalidSignature,
 	}, {
 		"valid signatures",
@@ -280,7 +261,6 @@ func TestLink_Validate(t *testing.T) {
 			l := chainscripttest.NewLinkBuilder(t).WithSignature(t, "").WithSignature(t, "").Build()
 			return l
 		},
-		nil,
 		nil,
 	}, {
 		"valid refs",
@@ -292,18 +272,13 @@ func TestLink_Validate(t *testing.T) {
 			}
 			return l
 		},
-		func(context.Context, chainscript.LinkHash) (*chainscript.Segment, error) {
-			l := chainscripttest.NewLinkBuilder(t).Build()
-			s, _ := l.Segmentify()
-			return s, nil
-		},
 		nil,
 	}}
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			l := tt.link(t)
-			err := l.Validate(context.Background(), tt.getSegment)
+			err := l.Validate(context.Background())
 			if tt.err != nil {
 				assert.EqualError(t, errors.Cause(err), tt.err.Error())
 			} else {

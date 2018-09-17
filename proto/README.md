@@ -88,5 +88,5 @@ ChainScript should follow [protobuf's guidelines](https://developers.google.com/
 for backwards-compatible updates.
 
 ChainScript provides multiple version fields. These fields should be used by
-applications to update the dynamic parts of their data (such as a link's state)
-in a backwards-compatible way.
+applications to update the dynamic parts of their data (such as `link.data` and
+`link.meta.data`) in a backwards-compatible way.

@@ -50,7 +50,7 @@ func TestRegression(t *testing.T) {
 			segment, err := chainscript.UnmarshalSegment(data)
 			require.NoError(t, err)
 
-			err = segment.Validate(context.Background(), nil)
+			err = segment.Validate(context.Background())
 			require.NoError(t, err)
 
 			testSegments[td.ID] = segment

@@ -45,7 +45,7 @@ func TestSegment_Validate(t *testing.T) {
 		l := chainscripttest.NewLinkBuilder(t).Build()
 		s := &chainscript.Segment{Link: l}
 
-		err := s.Validate(context.Background(), nil)
+		err := s.Validate(context.Background())
 		assert.EqualError(t, err, chainscript.ErrMissingLinkHash.Error())
 	})
 
@@ -58,7 +58,7 @@ func TestSegment_Validate(t *testing.T) {
 			},
 		}
 
-		err := s.Validate(context.Background(), nil)
+		err := s.Validate(context.Background())
 		assert.EqualError(t, err, chainscript.ErrLinkHashMismatch.Error())
 	})
 
@@ -66,7 +66,7 @@ func TestSegment_Validate(t *testing.T) {
 		s, err := chainscripttest.NewLinkBuilder(t).WithInvalidFields().Build().Segmentify()
 		require.NoError(t, err)
 
-		err = s.Validate(context.Background(), nil)
+		err = s.Validate(context.Background())
 		assert.Error(t, err)
 	})
 
@@ -74,7 +74,7 @@ func TestSegment_Validate(t *testing.T) {
 		s, err := chainscripttest.NewLinkBuilder(t).Build().Segmentify()
 		require.NoError(t, err)
 
-		err = s.Validate(context.Background(), nil)
+		err = s.Validate(context.Background())
 		require.NoError(t, err)
 	})
 }

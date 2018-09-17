@@ -65,7 +65,7 @@ func TestMarshal(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	require.NoError(t, segment.Validate(context.Background(), nil))
+	require.NoError(t, segment.Validate(context.Background()))
 
 	t.Run("proto", func(t *testing.T) {
 		protoBytes, err := chainscript.MarshalSegment(segment)
@@ -74,7 +74,7 @@ func TestMarshal(t *testing.T) {
 		unmarshalled, err := chainscript.UnmarshalSegment(protoBytes)
 		require.NoError(t, err)
 
-		err = unmarshalled.Validate(context.Background(), nil)
+		err = unmarshalled.Validate(context.Background())
 		require.NoError(t, err)
 
 		chainscripttest.SegmentsEqual(t, segment, unmarshalled)
@@ -88,7 +88,7 @@ func TestMarshal(t *testing.T) {
 		err = json.Unmarshal(jsonBytes, &unmarshalled)
 		require.NoError(t, err)
 
-		err = unmarshalled.Validate(context.Background(), nil)
+		err = unmarshalled.Validate(context.Background())
 		require.NoError(t, err)
 
 		chainscripttest.SegmentsEqual(t, segment, &unmarshalled)

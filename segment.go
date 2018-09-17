@@ -51,7 +51,7 @@ func (s *Segment) SetLinkHash() error {
 }
 
 // Validate checks for errors in a segment
-func (s *Segment) Validate(ctx context.Context, getSegment GetSegmentFunc) error {
+func (s *Segment) Validate(ctx context.Context) error {
 	if s.Meta == nil || len(s.Meta.LinkHash) == 0 {
 		return ErrMissingLinkHash
 	}
@@ -65,7 +65,7 @@ func (s *Segment) Validate(ctx context.Context, getSegment GetSegmentFunc) error
 		return ErrLinkHashMismatch
 	}
 
-	return s.Link.Validate(ctx, getSegment)
+	return s.Link.Validate(ctx)
 }
 
 // AddEvidence adds an evidence to the segment.

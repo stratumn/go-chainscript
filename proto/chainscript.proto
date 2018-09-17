@@ -113,6 +113,14 @@ message LinkMeta {
     double priority = 11;
     // References to related links (potentially in other processes).
     repeated LinkReference refs = 12;
+    // Maximum number of children the current link is allowed to have.
+    // A reference doesn't count as a child, only usage of prev_link_hash
+    // counts as a link child.
+    // It is the application's responsibility to comply with this property.
+    // If set to -1, the link can have as many children as it wants.
+    // If set to 0, the link can't have any children.
+    // If set to n > 0, the link can have at most n children.
+    int32 out_degree = 13;
 
     // A link is a step in a given process.
     Process process = 20;
