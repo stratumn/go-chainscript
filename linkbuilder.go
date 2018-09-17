@@ -53,7 +53,8 @@ func NewLinkBuilder(process string, mapID string) *LinkBuilder {
 		link: &Link{
 			Version: LinkVersion,
 			Meta: &LinkMeta{
-				ClientId: ClientID,
+				ClientId:  ClientID,
+				OutDegree: -1,
 				Process: &Process{
 					Name: process,
 				},
@@ -79,6 +80,13 @@ func (b *LinkBuilder) WithData(data interface{}) *LinkBuilder {
 		return b
 	}
 
+	return b
+}
+
+// WithDegree sets the maximum number of children a link is allowed to have.
+// By default this is set to -1 to allow any number of children.
+func (b *LinkBuilder) WithDegree(d int) *LinkBuilder {
+	b.link.Meta.OutDegree = int32(d)
 	return b
 }
 

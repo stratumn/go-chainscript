@@ -55,6 +55,7 @@ func TestLinkBuilder(t *testing.T) {
 			assert.Equal(t, 0.0, l.Meta.Priority)
 			assert.Nil(t, l.Data)
 			assert.Nil(t, l.Meta.Data)
+			assert.Equal(t, int32(-1), l.Meta.OutDegree)
 		},
 		nil,
 	}, {
@@ -69,6 +70,13 @@ func TestLinkBuilder(t *testing.T) {
 		chainscript.NewLinkBuilder(process, mapID).WithAction("receive-document"),
 		func(t *testing.T, l *chainscript.Link) {
 			assert.Equal(t, "receive-document", l.Meta.Action)
+		},
+		nil,
+	}, {
+		"out degree",
+		chainscript.NewLinkBuilder(process, mapID).WithDegree(1),
+		func(t *testing.T, l *chainscript.Link) {
+			assert.Equal(t, 1, int(l.Meta.OutDegree))
 		},
 		nil,
 	}, {

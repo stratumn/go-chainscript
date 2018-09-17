@@ -49,6 +49,7 @@ func (t *SimpleSegmentTest) Generate() string {
 	link, err := chainscript.NewLinkBuilder("test_process", "test_map").
 		WithAction("init").
 		WithData(CustomData{Name: "ʙᴀᴛᴍᴀɴ", Age: 42}).
+		WithDegree(3).
 		WithMetadata("bruce wayne").
 		WithParent([]byte{42, 42}).
 		WithPriority(42).
@@ -92,6 +93,10 @@ func (t *SimpleSegmentTest) Validate(encoded string) error {
 
 	if segment.Link.Meta.Action != "init" {
 		return errors.Errorf("invalid action: %s", segment.Link.Meta.Action)
+	}
+
+	if segment.Link.Meta.OutDegree != int32(3) {
+		return errors.Errorf("invalid degree: %d", segment.Link.Meta.OutDegree)
 	}
 
 	data := CustomData{}
