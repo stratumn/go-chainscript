@@ -163,7 +163,6 @@ func (lb *LinkBuilder) WithRandomData() *LinkBuilder {
 	lb.Link.Meta.Action = RandomString(12)
 	lb.Link.Meta.Data = RandomBytes(24)
 	lb.Link.Meta.MapId = RandomString(24)
-	lb.Link.Meta.PrevLinkHash = RandomHash()
 	lb.Link.Meta.Priority = rand.Float64()
 	lb.Link.Meta.Process = &chainscript.Process{
 		Name:  RandomString(24),
