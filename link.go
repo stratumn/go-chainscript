@@ -38,7 +38,6 @@ var (
 	ErrMissingVersion     = errors.New("version is missing")
 	ErrUnknownLinkVersion = errors.New("unknown link version")
 	ErrUnknownClientID    = errors.New("link was created with a unknown client: can't deserialize it")
-	ErrRefNotFound        = errors.New("referenced link could not be retrieved")
 )
 
 // compatibleClients contains a list of other libraries that are compatible
