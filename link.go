@@ -41,9 +41,6 @@ var (
 	ErrRefNotFound        = errors.New("referenced link could not be retrieved")
 )
 
-// GetSegmentFunc is the function signature to retrieve a Segment.
-type GetSegmentFunc func(ctx context.Context, linkHash LinkHash) (*Segment, error)
-
 // compatibleClients contains a list of other libraries that are compatible
 // with this one. Only clients in this list are known to produce binary data
 // that this library can correctly interpret.
@@ -206,7 +203,7 @@ func (l *Link) Clone() (*Link, error) {
 }
 
 // Validate checks for errors in a link.
-func (l *Link) Validate(ctx context.Context, getSegment GetSegmentFunc) error {
+func (l *Link) Validate(ctx context.Context) error {
 	if len(l.Version) == 0 {
 		return ErrMissingVersion
 	}
@@ -228,14 +225,6 @@ func (l *Link) Validate(ctx context.Context, getSegment GetSegmentFunc) error {
 
 		if len(ref.LinkHash) == 0 {
 			return ErrMissingLinkHash
-		}
-
-		// We only check the referenced segment if it's in the same process.
-		if l.Meta.Process.Name == ref.Process && getSegment != nil {
-			seg, err := getSegment(ctx, ref.LinkHash)
-			if err != nil || seg == nil {
-				return ErrRefNotFound
-			}
 		}
 	}
 

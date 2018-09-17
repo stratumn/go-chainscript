@@ -84,7 +84,7 @@ func (t *EvidencesTest) Validate(encoded string) error {
 		return err
 	}
 
-	err = segment.Validate(context.Background(), nil)
+	err = segment.Validate(context.Background())
 	if err != nil {
 		return err
 	}
