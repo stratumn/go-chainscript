@@ -79,6 +79,12 @@ func (lb *LinkBuilder) WithData(t *testing.T, data interface{}) *LinkBuilder {
 	return lb
 }
 
+// WithDegree sets the link's out degree.
+func (lb *LinkBuilder) WithDegree(d int) *LinkBuilder {
+	lb.Link.Meta.OutDegree = int32(d)
+	return lb
+}
+
 // WithInvalidFields makes the link invalid by setting some fields to invalid
 // values.
 func (lb *LinkBuilder) WithInvalidFields() *LinkBuilder {
