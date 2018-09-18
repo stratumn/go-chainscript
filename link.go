@@ -36,6 +36,7 @@ const (
 // Link errors.
 var (
 	ErrMissingVersion     = errors.New("version is missing")
+	ErrOutDegree          = errors.New("cannot create link: parent has too many children")
 	ErrUnknownLinkVersion = errors.New("unknown link version")
 	ErrUnknownClientID    = errors.New("link was created with a unknown client: can't deserialize it")
 )
