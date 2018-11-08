@@ -34,6 +34,7 @@ func NewSignaturesTest() TestCase {
 // Generate encoded segment bytes.
 func (t *SignaturesTest) Generate() string {
 	link, err := chainscript.NewLinkBuilder("test_process", "test_map").
+		WithAction("ʙᴀᴛᴍᴀɴ").
 		Build()
 	if err != nil {
 		panic(err)
