@@ -3,6 +3,10 @@
 Each version of the ChainScript implementation makes specific serialization
 choices. Those choices are detailed in this document.
 
+## 1.0.1: bug fixes
+
+- Fixed some potential nil pointer exceptions when validating malformed content
+
 ## 1.0.0
 
 - Dependencies:
