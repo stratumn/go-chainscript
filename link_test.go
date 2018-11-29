@@ -225,6 +225,14 @@ func TestLink_Validate(t *testing.T) {
 		},
 		chainscript.ErrMissingVersion,
 	}, {
+		"missing meta",
+		func(*testing.T) *chainscript.Link {
+			l := chainscripttest.NewLinkBuilder(t).Build()
+			l.Meta = nil
+			return l
+		},
+		chainscript.ErrMissingProcess,
+	}, {
 		"missing process",
 		func(*testing.T) *chainscript.Link {
 			l := chainscripttest.NewLinkBuilder(t).WithProcess("").Build()

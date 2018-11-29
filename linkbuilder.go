@@ -23,6 +23,7 @@ var (
 	ErrMissingProcess  = errors.New("link process is missing")
 	ErrMissingMapID    = errors.New("link map id is missing")
 	ErrMissingLinkHash = errors.New("link hash is missing")
+	ErrMissingLink     = errors.New("link is missing")
 	ErrInvalidPriority = errors.New("priority needs to be positive")
 )
 

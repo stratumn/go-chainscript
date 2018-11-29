@@ -41,6 +41,13 @@ func TestSegment_LinkHash(t *testing.T) {
 }
 
 func TestSegment_Validate(t *testing.T) {
+	t.Run("missing link", func(t *testing.T) {
+		s := &chainscript.Segment{}
+
+		err := s.Validate(context.Background())
+		assert.EqualError(t, err, chainscript.ErrMissingLink.Error())
+	})
+
 	t.Run("missing link hash", func(t *testing.T) {
 		l := chainscripttest.NewLinkBuilder(t).Build()
 		s := &chainscript.Segment{Link: l}

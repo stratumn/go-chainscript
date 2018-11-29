@@ -45,7 +45,7 @@ var (
 // with this one. Only clients in this list are known to produce binary data
 // that this library can correctly interpret.
 var compatibleClients = map[string]struct{}{
-	ClientID: struct{}{},
+	ClientID:                             struct{}{},
 	"github.com/stratumn/js-chainscript": struct{}{},
 }
 
@@ -207,7 +207,7 @@ func (l *Link) Validate(ctx context.Context) error {
 	if len(l.Version) == 0 {
 		return ErrMissingVersion
 	}
-	if l.Meta.Process == nil || len(l.Meta.Process.Name) == 0 {
+	if l.Meta == nil || l.Meta.Process == nil || len(l.Meta.Process.Name) == 0 {
 		return ErrMissingProcess
 	}
 	if len(l.Meta.MapId) == 0 {

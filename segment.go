@@ -52,6 +52,9 @@ func (s *Segment) SetLinkHash() error {
 
 // Validate checks for errors in a segment
 func (s *Segment) Validate(ctx context.Context) error {
+	if s.Link == nil {
+		return ErrMissingLink
+	}
 	if s.Meta == nil || len(s.Meta.LinkHash) == 0 {
 		return ErrMissingLinkHash
 	}
