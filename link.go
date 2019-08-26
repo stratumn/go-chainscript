@@ -45,8 +45,10 @@ var (
 // with this one. Only clients in this list are known to produce binary data
 // that this library can correctly interpret.
 var compatibleClients = map[string]struct{}{
-	ClientID:                             struct{}{},
-	"github.com/stratumn/js-chainscript": struct{}{},
+	ClientID: struct{}{},
+	"github.com/stratumn/js-chainscript":     struct{}{},
+	"github.com/stratumn/java-chainscript":   struct{}{},
+	"github.com/stratumn/csharp-chainscript": struct{}{},
 }
 
 // compatible returns an error if the link isn't compatible with this package.
