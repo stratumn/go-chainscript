@@ -33,10 +33,12 @@ pull the latest changes with `git subtree`.
 Stratumn provides opinionated reference implementations that should suit most
 projects:
 
-| Language   | Repository                                 | Status |
-| ---------- | ------------------------------------------ | ------ |
-| Golang     | https://github.com/stratumn/go-chainscript | 1.0.0  |
-| Javascript | https://github.com/stratumn/js-chainscript | 1.0.0  |
+| Language   | Repository                                     | Status |
+| ---------- | ---------------------------------------------- | ------ |
+| Golang     | https://github.com/stratumn/go-chainscript     | 1.0.0  |
+| Javascript | https://github.com/stratumn/js-chainscript     | 1.0.0  |
+| Java       | https://github.com/stratumn/java-chainscript   | 0.0.x  |
+| C#         | https://github.com/stratumn/csharp-chainscript | 0.0.x  |
 
 ## Testing
 
